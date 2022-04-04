@@ -7,6 +7,7 @@ import * as WebBrowser from 'expo-web-browser';
 import { Video } from 'expo-av';
 import { NavigationContainer, useScrollToTop } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 const tosSeries = {
   "name": "Star Trek: The Original Series",
@@ -220,11 +221,43 @@ const listSeason = (season) => {
   );
 }
 
+const SeriesStack = createNativeStackNavigator();
+
+function SeriesStackScreen() {
+  return (
+    <SeriesStack.Navigator>
+      <SeriesStack.Screen name="Series" component={SeriesScreen} />
+      <SeriesStack.Screen name="Details" component={DetailsScreen} />
+    </SeriesStack.Navigator>
+  );
+}
+
+function DetailsScreen() {
+  return (
+    <View style={{ flex: 1, justifyContent: 'center',  alignItems: 'center' }}>
+      <Text>Details!</Text>
+    </View>
+  );
+}
+
+function SeriesScreen({ navigation }) {
+  return (
+    <View>
+      <Text style={{textAlign: 'center', marginTop: 300}}>Series Screen</Text>
+      <Button
+        title="Go to Details"
+        onPress={() => navigation.navigate('Details')}
+      />
+    </View>
+   );
+ }
+
+
 function HomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
-        <Text>Star Trek app</Text>
+        <Text>Star Trek Episodes</Text>
         <StatusBar style="auto" />
       </ScrollView>
     </SafeAreaView>
@@ -269,14 +302,15 @@ function MyTabs() {
         tabBarInactiveTintColor: '#3C3C43',
       })}
     >
-      {/* <Tab.Screen name="Home" component={HomeScreen} /> */}
-      <Tab.Screen name="The Original Series" options={{ tabBarLabel: "TOS" }}>
+      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="SeriesStack" component={SeriesStackScreen} options={{ headerShown: false, tabBarLabel: "Series" }} />
+      {/* <Tab.Screen name="The Original Series" options={{ tabBarLabel: "TOS" }}>
         {() => <EpisodesScreen show={tosSeries} />}
-      </Tab.Screen>
+      </Tab.Screen> */}
       <Tab.Screen name="The Next Generation" options={{ tabBarLabel: "TNG" }}>
         {() => <EpisodesScreen show={tngSeries} />}
       </Tab.Screen>
-      <Tab.Screen name="Deep Space Nine" options={{ tabBarLabel: "DS9" }}>
+      {/* <Tab.Screen name="Deep Space Nine" options={{ tabBarLabel: "DS9" }}>
         {() => <EpisodesScreen show={ds9Series} />}
       </Tab.Screen>
       <Tab.Screen name="Voyager" options={{ tabBarLabel: "VOY" }}>
@@ -284,7 +318,7 @@ function MyTabs() {
       </Tab.Screen>
       <Tab.Screen name="Enterprise" options={{ tabBarLabel: "ENT" }}>
         {() => <EpisodesScreen show={entSeries} />}
-      </Tab.Screen>
+      </Tab.Screen> */}
     </Tab.Navigator>
   );
 }
