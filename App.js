@@ -1,13 +1,14 @@
 import * as React from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { useWindowDimensions, StyleSheet, Button, Pressable, Text, Image, View, SafeAreaView, ScrollView } from 'react-native';
+import { useWindowDimensions, StyleSheet, Button, Pressable, Text, Modal, Alert, Image, View, SafeAreaView, ScrollView, SectionList } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import * as WebBrowser from 'expo-web-browser';
+// import * as WebBrowser from 'expo-web-browser';
 // import RenderHtml from 'react-native-render-html';
 import { Video } from 'expo-av';
 import { NavigationContainer, useScrollToTop } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { SeasonHeader, EpisodeItem } from './components/SectionListHeader';
 
 const tosSeries = {
   "name": "Star Trek: The Original Series",
@@ -67,6 +68,68 @@ const entSeries = {
     require(`./assets/episodes/stent/04.json`),
   ]
 };
+
+const formatSeriesData = (series) => {
+  let dataSeries = [];
+  series.seasons.forEach((season, index) => {
+    let dataSeason = {};
+    season.results.forEach((episode, index) => {
+      if(index === 0) {
+        dataSeason['season'] = episode
+        dataSeason.data = [];
+      } else { 
+        dataSeason.data.push(episode);
+      }
+    });
+    dataSeries.push(dataSeason);
+  });
+  return dataSeries;
+}
+
+function DetailsScreen({ route, navigation }) {
+  const sectionListRef = React.useRef(null);
+  const [selectedSection, setSelectedSection] = React.useState(0);
+  React.useEffect(() => {
+    sectionListRef.current.scrollToLocation({ animated: false, sectionIndex: selectedSection, itemIndex: 1 });
+  }, [selectedSection]);
+
+  const { series } = route.params;
+  const tvshow = formatSeriesData(series);
+
+  const moveToSection = (index, sectionListRef) => {
+    console.log("moveToSection", index);
+    setSelectedSection(index);    
+  }
+
+  return (
+    <SafeAreaView style={{ flex: 1, paddingTop: StatusBar.currentHeight, marginHorizontal: 16 }}>
+      <View style={{ flexDirection: "row", alignItems: "center", marginVertical: 18, }}>
+        <Button title="1" onPress={() => moveToSection(0, sectionListRef)} />
+        <Button title="2" onPress={() => moveToSection(1, sectionListRef)} />
+        <Button title="3" onPress={() => moveToSection(2, sectionListRef)} />
+        <Button title="4" onPress={() => moveToSection(3, sectionListRef)} />
+        <Button title="5" onPress={() => moveToSection(4, sectionListRef)} />
+        <Button title="6" onPress={() => moveToSection(5, sectionListRef)} />
+        <Button title="7" onPress={() => moveToSection(6, sectionListRef)} />
+      </View>
+      <SectionList
+        ref={sectionListRef}
+        sections={tvshow}
+        keyExtractor={(item, index) => item + index}
+        renderItem={({ item }) => <EpisodeItem episode={item} />}
+        renderSectionHeader={({ section: { season } }) => <SeasonHeader season={season} />}
+        onScrollToIndexFailed={(error) => {
+          const offset = error.averageItemLength * error.index;
+          console.log("error", error);
+          console.log("offset", offset);
+          console.log("selectedSection", selectedSection);
+          setTimeout(() => sectionListRef.current.scrollToLocation({ animated: false, sectionIndex: 0, itemIndex: error.highestMeasuredFrameIndex }), 100)
+          setTimeout(() => sectionListRef.current.scrollToLocation({ animated: false, sectionIndex: selectedSection, itemIndex: 0 }), 100)
+        }}
+      />
+    </SafeAreaView>
+  );
+}
 
 const randomIntFromInterval = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1) + min)
@@ -129,27 +192,27 @@ const RandomSeriesEpisode = (seasons) => {
 
 }
 
-const SeasonHeader = ({ width, episode }) => (
-  <View>
-    <Text style={{ fontSize: 13, color: "#3C3C43", }}>Released {getYear(episode.releaseDate)}</Text>
-    <Text style={{ fontSize: 34, fontWeight: "bold", }}>{getSeriesSeason(episode.collectionName, episode.artistName)}</Text>
-    {/* <RenderHtml contentWidth={width} source={{ html: episode.longDescription }} /> */}
-  </View>
-);
+// const SeasonHeader = ({ width, episode }) => (
+//   <View>
+//     <Text style={{ fontSize: 13, color: "#3C3C43", }}>Released {getYear(episode.releaseDate)}</Text>
+//     <Text style={{ fontSize: 34, fontWeight: "bold", }}>{getSeriesSeason(episode.collectionName, episode.artistName)}</Text>
+//     {/* <RenderHtml contentWidth={width} source={{ html: episode.longDescription }} /> */}
+//   </View>
+// );
 
-const WebBrowserButton = ({ webUrl }) => {
-  const [result, setResult] = React.useState(null);
-  const _handlePressButtonAsync = async () => {
-    let result = await WebBrowser.openBrowserAsync(webUrl, { dismissButtonStyle: 'close', controlsColor: '#000000' });
-    setResult(result);
-  };
+// const WebBrowserButton = ({ webUrl }) => {
+//   const [result, setResult] = React.useState(null);
+//   const _handlePressButtonAsync = async () => {
+//     let result = await WebBrowser.openBrowserAsync(webUrl, { dismissButtonStyle: 'close', controlsColor: '#000000' });
+//     setResult(result);
+//   };
 
-  return(
-    <Pressable onPress={_handlePressButtonAsync}>
-      <Ionicons name="play" size={24} color="#3C3C43" />
-    </Pressable>
-  );
-}
+//   return(
+//     <Pressable onPress={_handlePressButtonAsync}>
+//       <Ionicons name="play" size={24} color="#3C3C43" />
+//     </Pressable>
+//   );
+// }
 
 const EpisodeCard = ({ episode }) => {
   const video = React.useRef(null);
@@ -184,20 +247,20 @@ const EpisodeCard = ({ episode }) => {
   );
 }
 
-const EpisodeItem = ({ episode }) => {
-  const webUrl = `https://google.com/search?q=${encodeURIComponent(episode.artistName + ' ' + episode.trackName)}`;
-  return(
-    <View style={{ flexDirection: "row", alignItems: "center", marginVertical: 18, }}>
-      <View style={{ flex: 1, }}>
-        <Text style={{ fontSize: 17, fontWeight: "bold", marginBottom: 1, }}>{ episode.trackNumber }. { episode.trackName }</Text>
-        <Text style={{ fontSize: 17, }}>{ episode.shortDescription }...</Text>
-      </View>
-      <View style={{ padding: 8, }}>
-        <WebBrowserButton webUrl={webUrl} />
-      </View>
-    </View>
-  )
-}
+// const EpisodeItem = ({ episode }) => {
+//   const webUrl = `https://google.com/search?q=${encodeURIComponent(episode.artistName + ' ' + episode.trackName)}`;
+//   return(
+//     <View style={{ flexDirection: "row", alignItems: "center", marginVertical: 18, }}>
+//       <View style={{ flex: 1, }}>
+//         <Text style={{ fontSize: 17, fontWeight: "bold", marginBottom: 1, }}>{ episode.trackNumber }. { episode.trackName }</Text>
+//         <Text style={{ fontSize: 17, }}>{ episode.shortDescription }...</Text>
+//       </View>
+//       <View style={{ padding: 8, }}>
+//         <WebBrowserButton webUrl={webUrl} />
+//       </View>
+//     </View>
+//   )
+// }
 
 const renderSeason = (season) => (
   <View key={randomIntFromInterval(1, 1000)} style={{ backgroundColor: "#ffffff", padding: 16, marginVertical: 8, borderRadius: 8, }}>
@@ -227,16 +290,8 @@ function SeriesStackScreen() {
   return (
     <SeriesStack.Navigator>
       <SeriesStack.Screen name="Series" component={SeriesScreen} />
-      <SeriesStack.Screen name="Details" component={DetailsScreen} />
+      <SeriesStack.Screen name="Details" component={DetailsScreen} options={({ route }) => ({ title: route.params.name })} />
     </SeriesStack.Navigator>
-  );
-}
-
-function DetailsScreen() {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center',  alignItems: 'center' }}>
-      <Text>Details!</Text>
-    </View>
   );
 }
 
@@ -245,8 +300,18 @@ function SeriesScreen({ navigation }) {
     <View>
       <Text style={{textAlign: 'center', marginTop: 300}}>Series Screen</Text>
       <Button
-        title="Go to Details"
-        onPress={() => navigation.navigate('Details')}
+        title="TNG"
+        onPress={() => navigation.navigate('Details', {
+          name: "The Next Generation",
+          series: tngSeries
+        })}
+      />
+      <Button
+        title="ENT"
+        onPress={() => navigation.navigate('Details', {
+          name: "Enterprise",
+          series: entSeries
+        })}
       />
     </View>
    );
@@ -254,11 +319,41 @@ function SeriesScreen({ navigation }) {
 
 
 function HomeScreen() {
+  const [modalVisible, setModalVisible] = React.useState(false);
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
         <Text>Star Trek Episodes</Text>
-        <StatusBar style="auto" />
+        <Modal
+        animationType="slide"
+        presentationStyle="pageSheet"
+        transparent={false}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert("Modal has been closed.");
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Hello World!</Text>
+            <Pressable
+              style={[styles.button, styles.buttonClose]}
+              onPress={() => setModalVisible(!modalVisible)}
+            >
+              <Text style={styles.textStyle}>Hide Modal</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
+      <Pressable
+        style={[styles.button, styles.buttonOpen]}
+        onPress={() => setModalVisible(true)}
+      >
+        <Text style={styles.textStyle}>Show Modal</Text>
+      </Pressable>
+
+        <StatusBar hidden={false} style="auto" />
       </ScrollView>
     </SafeAreaView>
   );
@@ -338,4 +433,35 @@ const styles = StyleSheet.create({
   scrollView: {
     paddingHorizontal: 16,
   },
+  modalView: {
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2
+  },
+  buttonOpen: {
+    backgroundColor: "#F194FF",
+  },
+  buttonClose: {
+    backgroundColor: "#2196F3",
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center"
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center"
+  }
 });
