@@ -1,8 +1,15 @@
 import React from 'react';
-import { useWindowDimensions, View, Modal, Pressable, Alert, Text, Image } from 'react-native';
+import { useWindowDimensions, StatusBar, View, Modal, Pressable, Alert, Text, Image } from 'react-native';
 import { Video } from 'expo-av';
 import RenderHtml from 'react-native-render-html';
 import { WebBrowserButton } from './Buttons';
+import { useIsFocused } from '@react-navigation/native';
+
+function FocusAwareStatusBar(props) {
+  const isFocused = useIsFocused();
+
+  return isFocused ? <StatusBar {...props} /> : null;
+}
 
 const getSeriesSeason = (artist, collection) => {
   return artist.replace(`${collection}, `, '');
@@ -34,6 +41,7 @@ const SeasonHeader = ({ season }) => {
         }}
       >
         <View>
+          <FocusAwareStatusBar barStyle="light-content" backgroundColor="#6a51ae" />
           <View>
             <Text style={{ fontSize: 13, color: "#3C3C43", }}>Released {getYear(season.releaseDate)}</Text>
             <Text style={{ fontSize: 34, fontWeight: "bold", }}>{getSeriesSeason(season.collectionName, season.artistName)}</Text>
