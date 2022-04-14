@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { useWindowDimensions, StyleSheet, Button, Pressable, Text, Modal, Alert, Image, View, SafeAreaView, ScrollView, SectionList } from 'react-native';
+import { useWindowDimensions, StyleSheet, Button, Pressable, Text, Modal, Alert, Image, View, SafeAreaView, ScrollView, FlatList, SectionList } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 
@@ -10,318 +10,186 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { NavigationContainer, useScrollToTop } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { SeasonHeader, EpisodeItem } from './components/SectionListHeader';
-import { MovieCard } from './components/Cards';
-
-const movies = require(`./assets/movies.json`);
+import { ShowItem, SeasonItem, EpisodeItem, MovieItem } from './components/Items';
+import { ShowCard, SeasonCard, EpisodeCard, MovieCard } from './components/Cards';
+import { formatSeasonData } from './helpers';
 
 const tosSeries = {
-  "name": "Star Trek: The Original Series",
-  "code": "tos",
+  "title": "Star Trek: The Original Series",
+  "abbreviation": "TOS",
+  "wrapperType": "collection",
+  "collectionType": "TV Season",
+  "artistId": 1439512969,
+  "collectionId": 1439512970,
+  "artistName": "Star Trek: The Original Series",
+  "collectionName": "Star Trek: The Original Series, The Complete Series",
+  "collectionCensoredName": "Star Trek: The Original Series, The Complete Series",
+  "artistViewUrl": "https://itunes.apple.com/au/tv-show/star-trek-the-original-series-remastered/id1439512969?uo=4",
+  "collectionViewUrl": "https://itunes.apple.com/au/tv-season/star-trek-the-original-series-remastered-the/id1439512970?uo=4",
+  "artworkUrl60": "https://is3-ssl.mzstatic.com/image/thumb/Music118/v4/69/52/49/69524998-8243-f46c-e15b-454ac01a463a/source/60x60bb.jpg",
+  "artworkUrl100": "https://is3-ssl.mzstatic.com/image/thumb/Music118/v4/69/52/49/69524998-8243-f46c-e15b-454ac01a463a/source/100x100bb.jpg",
+  "collectionPrice": 44.99,
+  "collectionHdPrice": 59.99,
+  "collectionExplicitness": "notExplicit",
+  "contentAdvisoryRating": "M",
+  "trackCount": 79,
+  "copyright": "© 2018 CBS Corp",
+  "country": "AUS",
+  "currency": "AUD",
+  "releaseDate": "2018-11-09T08:00:00Z",
+  "primaryGenreName": "Drama",
+  "longDescription": "Space. The Final Frontier. The U.S.S. Enterprise embarks on a five year mission to explore the galaxy. The Enterprise is under the command of Captain James T. Kirk. The First Officer is Mr. Spock, from the planet Vulcan. The Chief Medical Officer is Dr. Leonard 'Bones' McCoy. Their mission is to explore strange new worlds, to seek new life and new civilizations, to boldly go where no man has gone before!",
   "seasons": [
-    require(`./assets/episodes/sttos/01.json`),
-    require(`./assets/episodes/sttos/02.json`),
-    require(`./assets/episodes/sttos/03.json`),
+    require(`./assets/shows/sttos/01.json`),
+    require(`./assets/shows/sttos/02.json`),
+    require(`./assets/shows/sttos/03.json`),
   ]
 };
 const tngSeries = {
-  "name": "Star Trek: The Next Generation",
-  "code": "tng",
+  "title": "Star Trek: The Next Generation",
+  "abbreviation": "TNG",
+  "wrapperType": "collection",
+  "collectionType": "TV Season",
+  "artistId": 466420215,
+  "collectionId": 1439415393,
+  "artistName": "Star Trek: The Next Generation",
+  "collectionName": "Star Trek: The Next Generation: The Complete Series",
+  "collectionCensoredName": "Star Trek: The Next Generation: The Complete Series",
+  "artistViewUrl": "https://itunes.apple.com/au/tv-show/star-trek-the-next-generation/id466420215?uo=4",
+  "collectionViewUrl": "https://itunes.apple.com/au/tv-season/star-trek-the-next-generation-the-complete-series/id1439415393?uo=4",
+  "artworkUrl60": "https://is2-ssl.mzstatic.com/image/thumb/Music128/v4/f1/ca/30/f1ca3025-15dc-bac1-6ead-97b9c06d3d41/source/60x60bb.jpg",
+  "artworkUrl100": "https://is2-ssl.mzstatic.com/image/thumb/Music128/v4/f1/ca/30/f1ca3025-15dc-bac1-6ead-97b9c06d3d41/source/100x100bb.jpg",
+  "collectionPrice": 99.99,
+  "collectionHdPrice": 99.99,
+  "collectionExplicitness": "notExplicit",
+  "contentAdvisoryRating": "PG",
+  "trackCount": 178,
+  "copyright": "© 2018 CBS Corp",
+  "country": "AUS",
+  "currency": "AUD",
+  "releaseDate": "2018-11-09T08:00:00Z",
+  "primaryGenreName": "Sci-Fi & Fantasy",
+  "longDescription": "Restored and meticulously remastered in brilliant high definition, <i>Star Trek: The Next Generation<\/i> is a true milestone in TV history. With such thought-provoking episodes as “The Measure of a Man” and “The Inner Light”; the return of the Borg in “The Best of Both Worlds”; and the time-shattering confrontation between Captain Jean-Luc Picard (Patrick Stewart) and the mysterious, god-like Q in the Hugo Award-winning series finale. Enjoy every memorable moment from the series that re-launched the Star Trek™ legacy for new “generations” to enjoy and experience!",
   "seasons": [
-    require(`./assets/episodes/sttng/01.json`),
-    require(`./assets/episodes/sttng/02.json`),
-    require(`./assets/episodes/sttng/03.json`),
-    require(`./assets/episodes/sttng/04.json`),
-    require(`./assets/episodes/sttng/05.json`),
-    require(`./assets/episodes/sttng/06.json`),
-    require(`./assets/episodes/sttng/07.json`),
+    require(`./assets/shows/sttng/01.json`),
+    require(`./assets/shows/sttng/02.json`),
+    require(`./assets/shows/sttng/03.json`),
+    require(`./assets/shows/sttng/04.json`),
+    require(`./assets/shows/sttng/05.json`),
+    require(`./assets/shows/sttng/06.json`),
+    require(`./assets/shows/sttng/07.json`),
   ]
 };
 const ds9Series = {
-  "name": "Star Trek: Deep Space Nine",
-  "code": "ds9",
+  "title": "Star Trek: Deep Space Nine",
+  "abbreviation": "DS9",
+  "wrapperType": "collection",
+  "collectionType": "TV Season",
+  "artistId": 256033895,
+  "collectionId": 1439412147,
+  "artistName": "Star Trek: Deep Space Nine",
+  "collectionName": "Star Trek: Deep Space Nine: The Complete Series",
+  "collectionCensoredName": "Star Trek: Deep Space Nine: The Complete Series",
+  "artistViewUrl": "https://itunes.apple.com/au/tv-show/star-trek-deep-space-nine/id256033895?uo=4",
+  "collectionViewUrl": "https://itunes.apple.com/au/tv-season/star-trek-deep-space-nine-the-complete-series/id1439412147?uo=4",
+  "artworkUrl60": "https://is5-ssl.mzstatic.com/image/thumb/Music118/v4/42/aa/ba/42aaba0c-ffef-7834-618b-93af2213b477/source/60x60bb.jpg",
+  "artworkUrl100": "https://is5-ssl.mzstatic.com/image/thumb/Music118/v4/42/aa/ba/42aaba0c-ffef-7834-618b-93af2213b477/source/100x100bb.jpg",
+  "collectionPrice": 79.99,
+  "collectionExplicitness": "notExplicit",
+  "contentAdvisoryRating": "M",
+  "trackCount": 175,
+  "copyright": "© 2018 CBS Corp",
+  "country": "AUS",
+  "currency": "AUD",
+  "releaseDate": "2018-11-09T08:00:00Z",
+  "primaryGenreName": "Sci-Fi & Fantasy",
+  "longDescription": "The third Star Trek series concerns Benjamin Sisko, commander of the space station Deep Space Nine, who discovers the first known stable wormhole--a virtual shortcut through space that leads from the Alpha Quadrant to the Gamma Quadrant on the other side of the galaxy.",
   "seasons": [
-    require(`./assets/episodes/stds9/01.json`),
-    require(`./assets/episodes/stds9/02.json`),
-    require(`./assets/episodes/stds9/03.json`),
-    require(`./assets/episodes/stds9/04.json`),
-    require(`./assets/episodes/stds9/05.json`),
-    require(`./assets/episodes/stds9/06.json`),
-    require(`./assets/episodes/stds9/07.json`),
+    require(`./assets/shows/stds9/01.json`),
+    require(`./assets/shows/stds9/02.json`),
+    require(`./assets/shows/stds9/03.json`),
+    require(`./assets/shows/stds9/04.json`),
+    require(`./assets/shows/stds9/05.json`),
+    require(`./assets/shows/stds9/06.json`),
+    require(`./assets/shows/stds9/07.json`),
   ]
 };
 const voySeries = {
-  "name": "Star Trek: Voyager",
-  "code": "voy",
+  "title": "Star Trek: Voyager",
+  "abbreviation": "VOY",
+  "wrapperType": "collection",
+  "collectionType": "TV Season",
+  "artistId": 252478381,
+  "collectionId": 1439413673,
+  "artistName": "Star Trek: Voyager",
+  "collectionName": "Star Trek: Voyager, The Complete Series",
+  "collectionCensoredName": "Star Trek: Voyager, The Complete Series",
+  "artistViewUrl": "https://itunes.apple.com/au/tv-show/star-trek-voyager/id252478381?uo=4",
+  "collectionViewUrl": "https://itunes.apple.com/au/tv-season/star-trek-voyager-the-complete-series/id1439413673?uo=4",
+  "artworkUrl60": "https://is4-ssl.mzstatic.com/image/thumb/Music118/v4/e9/9f/22/e99f22dc-ea9d-05bb-8729-4ff5172f22db/source/60x60bb.jpg",
+  "artworkUrl100": "https://is4-ssl.mzstatic.com/image/thumb/Music118/v4/e9/9f/22/e99f22dc-ea9d-05bb-8729-4ff5172f22db/source/100x100bb.jpg",
+  "collectionPrice": 79.99,
+  "collectionExplicitness": "notExplicit",
+  "contentAdvisoryRating": "M",
+  "trackCount": 170,
+  "copyright": "© 2018 CBS Corp",
+  "country": "AUS",
+  "currency": "AUD",
+  "releaseDate": "2018-11-09T08:00:00Z",
+  "primaryGenreName": "Sci-Fi & Fantasy",
+  "longDescription": "Relive the journey of the starship Voyager - from its harrowing first season in the Delta Quadrant to its exciting encounters with alien life forms and its quest to return home. From internal ship conflicts to battles with the Borg Collective, \"Voyager\" represents some of the finest writing, acting and visual effects ever seen in the \"Trek\" universe.",
   "seasons": [
-    require(`./assets/episodes/stvoy/01.json`),
-    require(`./assets/episodes/stvoy/02.json`),
-    require(`./assets/episodes/stvoy/03.json`),
-    require(`./assets/episodes/stvoy/04.json`),
-    require(`./assets/episodes/stvoy/05.json`),
-    require(`./assets/episodes/stvoy/06.json`),
-    require(`./assets/episodes/stvoy/07.json`),
+    require(`./assets/shows/stvoy/01.json`),
+    require(`./assets/shows/stvoy/02.json`),
+    require(`./assets/shows/stvoy/03.json`),
+    require(`./assets/shows/stvoy/04.json`),
+    require(`./assets/shows/stvoy/05.json`),
+    require(`./assets/shows/stvoy/06.json`),
+    require(`./assets/shows/stvoy/07.json`),
   ]
 };
 const entSeries = {
-  "name": "Star Trek: Enterprise",
-  "code": "ent",
+  "title": "Star Trek: Enterprise",
+  "abbreviation": "ENT",
+  "wrapperType": "collection",
+  "collectionType": "TV Season",
+  "artistId": 212367634,
+  "collectionId": 1439413076,
+  "artistName": "Star Trek: Enterprise",
+  "collectionName": "Star Trek: Enterprise: The Complete Series",
+  "collectionCensoredName": "Star Trek: Enterprise: The Complete Series",
+  "artistViewUrl": "https://itunes.apple.com/au/tv-show/star-trek-enterprise/id212367634?uo=4",
+  "collectionViewUrl": "https://itunes.apple.com/au/tv-season/star-trek-enterprise-the-complete-series/id1439413076?uo=4",
+  "artworkUrl60": "https://is4-ssl.mzstatic.com/image/thumb/Music118/v4/8f/c5/2c/8fc52c13-8d6b-6bde-f970-bfb69762e776/source/60x60bb.jpg",
+  "artworkUrl100": "https://is4-ssl.mzstatic.com/image/thumb/Music118/v4/8f/c5/2c/8fc52c13-8d6b-6bde-f970-bfb69762e776/source/100x100bb.jpg",
+  "collectionPrice": 59.99,
+  "collectionHdPrice": 59.99,
+  "collectionExplicitness": "notExplicit",
+  "contentAdvisoryRating": "M",
+  "trackCount": 98,
+  "copyright": "© 2018 CBS Corp",
+  "country": "AUS",
+  "currency": "AUD",
+  "releaseDate": "2018-11-09T08:00:00Z",
+  "primaryGenreName": "Sci-Fi & Fantasy",
+  "longDescription": "Join Captain Archer and his crew on their last adventures, including missions to restore the mind of the legendary Vulcan Surak to his people's High Command, to defeat a rogue army of genetically-enhanced supermen led by the brilliant Dr Soong, and as evil versions of themselves, to bring all the powers of Earth's Empite to heel in the Mirror Universe!",
   "seasons": [
-    require(`./assets/episodes/stent/01.json`),
-    require(`./assets/episodes/stent/02.json`),
-    require(`./assets/episodes/stent/03.json`),
-    require(`./assets/episodes/stent/04.json`),
+    require(`./assets/shows/stent/01.json`),
+    require(`./assets/shows/stent/02.json`),
+    require(`./assets/shows/stent/03.json`),
+    require(`./assets/shows/stent/04.json`),
   ]
 };
 
-// const formatSeriesData = (series) => {
-//   let dataSeries = [];
-//   series.seasons.forEach((season, index) => {
-//     let dataSeason = {};
-//     season.results.forEach((episode, index) => {
-//       if(index === 0) {
-//         dataSeason['season'] = episode
-//         dataSeason.data = [];
-//       } else { 
-//         dataSeason.data.push(episode);
-//       }
-//     });
-//     dataSeries.push(dataSeason);
-//   });
-//   return dataSeries;
-// }
+const movies = require(`./assets/movies/index.json`);
 
-const formatSeasonData = (season) => {
-  let dataShow = [];
-  let dataSeason = {};
-  season.results.forEach((episode, index) => {
-    if(index === 0) {
-      dataSeason['season'] = episode
-      dataSeason.data = [];
-    } else { 
-      dataSeason.data.push(episode);
-    }
-  });
-  dataShow.push(dataSeason);
-  return dataShow;
-}
-
-// const randomIntFromInterval = (min, max) => {
-//   return Math.floor(Math.random() * (max - min + 1) + min)
-// }
-
-// const getSeriesSeason = (artist, collection) => {
-//   return artist.replace(`${collection}, `, '');
-// }
-
-// const getYear = (date) => {
-//   var d = new Date(date);
-//   return d.getFullYear();
-// }
-
-// const renderSeries = (seasons) => {
-//   var series = [];
-//   seasons.map((item) => (
-//     series.push(
-//       renderSeason(item)
-//     )
-//   ))
-//   return (
-//     <View>
-//       { series }
-//     </View>
-//   )
-// }
-
-// const RandomSeriesEpisode = (seasons) => {
-//   const [episode, setEpisode] = React.useState({});
-
-//   const getRandomEpisode = (seasons) => {
-//     const randomSeason = randomIntFromInterval(0, seasons.length - 1);
-//     let season = seasons[randomSeason];
-//     let episodes = season.results;
-//     const randomEpisode = randomIntFromInterval(1, episodes.length - 1);
-//     let episode = episodes[randomEpisode];
-//     setEpisode(episode);
-//   }
-
-//   return(
-//     <View style={{ backgroundColor: "#ffffff", padding: 16, marginVertical: 16, borderRadius: 8, }}>
-//       <View style={{ flex: 1, flexDirection: "row", alignItems: "center", }}>
-//         <View style={{ width: "90%", }}>
-//           <Text style={{ fontSize: 34, fontWeight: "bold", }}>Random</Text>
-//         </View>
-//         <View style={{ width: "10%", }}>
-//           <Pressable onPress={() => getRandomEpisode(seasons.seasons)}>
-//             <Ionicons name="reload" size={24} color="#3C3C43" />
-//           </Pressable>
-//         </View>
-//       </View>
-//       {episode && Object.keys(episode).length !== 0 && Object.getPrototypeOf(episode) === Object.prototype &&
-//         <View style={{ marginTop: 16, }}>
-//           <EpisodeCard episode={episode} />
-//         </View>
-//       }
-//     </View>
-//   );
-
-// }
-
-// const SeasonHeader = ({ width, episode }) => (
-//   <View>
-//     <Text style={{ fontSize: 13, color: "#3C3C43", }}>Released {getYear(episode.releaseDate)}</Text>
-//     <Text style={{ fontSize: 34, fontWeight: "bold", }}>{getSeriesSeason(episode.collectionName, episode.artistName)}</Text>
-//     {/* <RenderHtml contentWidth={width} source={{ html: episode.longDescription }} /> */}
-//   </View>
-// );
-
-// const WebBrowserButton = ({ webUrl }) => {
-//   const [result, setResult] = React.useState(null);
-//   const _handlePressButtonAsync = async () => {
-//     let result = await WebBrowser.openBrowserAsync(webUrl, { dismissButtonStyle: 'close', controlsColor: '#000000' });
-//     setResult(result);
-//   };
-
-//   return(
-//     <Pressable onPress={_handlePressButtonAsync}>
-//       <Ionicons name="play" size={24} color="#3C3C43" />
-//     </Pressable>
-//   );
-// }
-
-// const EpisodeCard = ({ episode }) => {
-//   const video = React.useRef(null);
-//   const [status, setStatus] = React.useState({});
-//   const webUrl = `https://google.com/search?q=${encodeURIComponent(episode.artistName + ' ' + episode.trackName)}`;
-//   React.useEffect(() => video.current.playFromPositionAsync(0), [episode]);
-
-//   return(
-//     <View>
-//       <View style={{ flexDirection: "row", alignItems: "center", }}>
-//         <View style={{ flex: 1, }}>
-//           <Text style={{ fontSize: 13, color: "#3C3C43", }}>{getSeriesSeason(episode.collectionName, episode.artistName)}</Text>
-//           <Text style={{ fontSize: 17, fontWeight: "bold", marginBottom: 1, }}>{ episode.trackNumber }. { episode.trackName }</Text>
-//           <Text style={{ fontSize: 17, marginBottom: 16, }}>{ episode.longDescription }</Text>
-//         </View>
-//         <View style={{ padding: 8, }}>
-//           <WebBrowserButton webUrl={webUrl} />
-//         </View>
-//       </View>
-//       <Video
-//         ref={video}
-//         style={{ width: "100%", aspectRatio: 1.3 / 1, marginTop: 8, marginBottom: 8, borderRadius: 8, }}
-//         source={{
-//           uri: episode.previewUrl,
-//         }}
-//         useNativeControls
-//         resizeMode="contain"
-//         isLooping="false"
-//         onPlaybackStatusUpdate={status => setStatus(() => status)}
-//       />
-//     </View>
-//   );
-// }
-
-// const EpisodeItem = ({ episode }) => {
-//   const webUrl = `https://google.com/search?q=${encodeURIComponent(episode.artistName + ' ' + episode.trackName)}`;
-//   return(
-//     <View style={{ flexDirection: "row", alignItems: "center", marginVertical: 18, }}>
-//       <View style={{ flex: 1, }}>
-//         <Text style={{ fontSize: 17, fontWeight: "bold", marginBottom: 1, }}>{ episode.trackNumber }. { episode.trackName }</Text>
-//         <Text style={{ fontSize: 17, }}>{ episode.shortDescription }...</Text>
-//       </View>
-//       <View style={{ padding: 8, }}>
-//         <WebBrowserButton webUrl={webUrl} />
-//       </View>
-//     </View>
-//   )
-// }
-
-// function EpisodesScreen(props) { 
-//   const ref = React.useRef(null);
-//   useScrollToTop(ref);
-//   return (
-//     <SafeAreaView style={styles.container}>
-//       <ScrollView style={styles.scrollView} ref={ref}>
-//         <RandomSeriesEpisode seasons={props.show.seasons} />
-//         <View key={props.show.code}>{ renderSeries(props.show.seasons) }</View>
-//         <StatusBar style="auto" />
-//       </ScrollView>
-//     </SafeAreaView>
-//   );
-// }
-
-
-//  function DetailsScreen({ route, navigation }) {
-//   const sectionListRef = React.useRef(null);
-//   const [selectedSection, setSelectedSection] = React.useState(0);
-//   React.useEffect(() => {
-//     sectionListRef.current.scrollToLocation({ animated: false, sectionIndex: selectedSection, itemIndex: 1 });
-//   }, [selectedSection]);
-
-//   const { series } = route.params;
-//   const tvshow = formatSeriesData(series);
-
-//   const moveToSection = (index, sectionListRef) => {
-//     console.log("moveToSection", index);
-//     setSelectedSection(index);    
-//   }
-
-//   return (
-//     <SafeAreaView style={{ flex: 1, paddingTop: StatusBar.currentHeight, marginHorizontal: 16 }}>
-//       <View style={{ flexDirection: "row", alignItems: "center", marginVertical: 18, }}>
-//         <Button title="1" onPress={() => moveToSection(0, sectionListRef)} />
-//         <Button title="2" onPress={() => moveToSection(1, sectionListRef)} />
-//         <Button title="3" onPress={() => moveToSection(2, sectionListRef)} />
-//         <Button title="4" onPress={() => moveToSection(3, sectionListRef)} />
-//         <Button title="5" onPress={() => moveToSection(4, sectionListRef)} />
-//         <Button title="6" onPress={() => moveToSection(5, sectionListRef)} />
-//         <Button title="7" onPress={() => moveToSection(6, sectionListRef)} />
-//       </View>
-//       <SectionList
-//         ref={sectionListRef}
-//         sections={tvshow}
-//         keyExtractor={(item, index) => item + index}
-//         renderItem={({ item }) => <EpisodeItem episode={item} />}
-//         renderSectionHeader={({ section: { season } }) => <SeasonHeader season={season} />}
-//         onScrollToIndexFailed={(error) => {
-//           const offset = error.averageItemLength * error.index;
-//           console.log("error", error);
-//           console.log("offset", offset);
-//           console.log("selectedSection", selectedSection);
-//           setTimeout(() => sectionListRef.current.scrollToLocation({ animated: false, sectionIndex: 0, itemIndex: error.highestMeasuredFrameIndex }), 100)
-//           setTimeout(() => sectionListRef.current.scrollToLocation({ animated: false, sectionIndex: selectedSection, itemIndex: 0 }), 100)
-//         }}
-//       />
-//     </SafeAreaView>
-//   );
-// }
-
-// const renderSeason = (season) => (
-//   <View key={randomIntFromInterval(1, 1000)} style={{ backgroundColor: "#ffffff", padding: 16, marginVertical: 8, borderRadius: 8, }}>
-//     { listSeason(season) }
-//   </View>
-// )
-
-// const listSeason = (season) => {
-//   const { width } = useWindowDimensions();
-//   return (
-//     season.results.map((item, index) => (
-//       <View key={index}>
-//         {(() => {
-//           if (index == 0){
-//             return <SeasonHeader width={width} episode={item} />
-//           }
-//           return <EpisodeItem episode={item} />
-//         })()}
-//       </View>
-//     ))
-//   );
-// }
-
-
-
-
+const shows = [
+  tosSeries,
+  tngSeries,
+  ds9Series,
+  voySeries,
+  entSeries
+];
 
 
 function HomeScreen() {
@@ -329,37 +197,36 @@ function HomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
+        <StatusBar hidden={false} style="auto" />
         <Text>Star Trek Episodes</Text>
         <Modal
-        animationType="slide"
-        presentationStyle="pageSheet"
-        transparent={false}
-        visible={modalVisible}
-        onRequestClose={() => {
-          Alert.alert("Modal has been closed.");
-          setModalVisible(!modalVisible);
-        }}
-      >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalText}>Hello World!</Text>
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => setModalVisible(!modalVisible)}
-            >
-              <Text style={styles.textStyle}>Hide Modal</Text>
-            </Pressable>
+          animationType="slide"
+          presentationStyle="pageSheet"
+          transparent={false}
+          visible={modalVisible}
+          onRequestClose={() => {
+            Alert.alert("Modal has been closed.");
+            setModalVisible(!modalVisible);
+          }}
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalText}>Hello World!</Text>
+              <Pressable
+                style={[styles.button, styles.buttonClose]}
+                onPress={() => setModalVisible(!modalVisible)}
+              >
+                <Text style={styles.textStyle}>Hide Modal</Text>
+              </Pressable>
+            </View>
           </View>
-        </View>
-      </Modal>
-      <Pressable
-        style={[styles.button, styles.buttonOpen]}
-        onPress={() => setModalVisible(true)}
-      >
-        <Text style={styles.textStyle}>Show Modal</Text>
-      </Pressable>
-
-        <StatusBar hidden={false} style="auto" />
+        </Modal>
+        <Pressable
+          style={[styles.button, styles.buttonOpen]}
+          onPress={() => setModalVisible(true)}
+        >
+          <Text style={styles.textStyle}>Show Modal</Text>
+        </Pressable>
       </ScrollView>
     </SafeAreaView>
   );
@@ -371,70 +238,73 @@ function ShowsStackScreen() {
   return (
     <ShowsStack.Navigator>
       <ShowsStack.Screen name="Shows" component={ShowsScreen} />
-      <ShowsStack.Screen name="Show" component={ShowScreen} options={({ route }) => ({ title: route.params.name })} />
-      <ShowsStack.Screen name="Season" component={SeasonScreen} options={({ route }) => ({ title: route.params.name })} />
+      <ShowsStack.Screen name="Show" component={ShowScreen} options={({ route }) => ({ title: route.params.title })} />
+      <ShowsStack.Screen name="Season" component={SeasonScreen} options={({ route }) => ({ title: route.params.title })} />
+      <ShowsStack.Screen name="Episode" component={EpisodeScreen} options={({ route }) => ({ title: route.params.title })} />
     </ShowsStack.Navigator>
   );
 }
 
 function ShowsScreen({ navigation }) {
   return (
-    <View>
-      <Text>Shows Screen</Text>
-      <Pressable onPress={() => navigation.navigate('Show', { name: "The Original Series", series: tosSeries })}>
-        <Text>TOS</Text>
-      </Pressable>
-      <Pressable onPress={() => navigation.navigate('Show', { name: "The Next Generation", series: tngSeries })}>
-        <Text>TNG</Text>
-      </Pressable>
-      <Pressable onPress={() => navigation.navigate('Show', { name: "Deep Space Nine", series: ds9Series })}>
-        <Text>DS9</Text>
-      </Pressable>
-      <Pressable onPress={() => navigation.navigate('Show', { name: "Voyager", series: voySeries })}>
-        <Text>VOY</Text>
-      </Pressable>
-      <Pressable onPress={() => navigation.navigate('Show', { name: "Enterprise", series: entSeries })}>
-        <Text>ENT</Text>
-      </Pressable>
-    </View>
+    <SafeAreaView style={styles.container}>
+      <StatusBar hidden={false} style="auto" />
+      {shows.map((item, index) => (
+        <Pressable key={index} onPress={() => navigation.navigate('Show', { title: item.title, show: item })}>
+          <ShowItem show={item} />
+        </Pressable>
+      ))}
+    </SafeAreaView>
    );
  }
 
  function ShowScreen({ route, navigation }) {
-  const { series } = route.params;
+  const { show } = route.params;
   return (
-    <View>
-      <Text>ShowScreen</Text>
-      <Text>{ series.name }</Text>
-      <Text>{ series.code }</Text>
-      <Text>{ series.seasons.length }</Text>
-      {series.seasons.map((season, index) => (
-        <Pressable key={index} onPress={() => navigation.navigate('Season', { name: `Season ${index + 1}`, season: season })}>
-          <Text>Season { index + 1 }</Text>
-        </Pressable>
-      ))}
-    </View>
+    <SafeAreaView style={styles.container}>
+      <ScrollView style={styles.scrollView}>
+        <StatusBar hidden={false} style="auto" />
+        <ShowCard show={show} />
+        {show.seasons.map((item, index) => (
+          <Pressable key={index} onPress={() => navigation.navigate('Season', { title: `Season ${index + 1}`, season: item })}>
+            <SeasonItem season={index} />
+          </Pressable>
+        ))}
+      </ScrollView>
+    </SafeAreaView>
   );
  }
-
- 
 
  function SeasonScreen({ route, navigation }) {
   const { season } = route.params;
-  const tvshow = formatSeasonData(season);
+  const introduction = season.results[0];
+  const episodes = season.results.filter((_item, index) => index > 0);
   return (
-    <View>
-      <Text>SeasonScreen</Text>
-      <Text>{ season.results.length - 1 }</Text>
-      <SectionList
-        sections={tvshow}
-        keyExtractor={(item, index) => item + index}
-        renderItem={({ item }) => <EpisodeItem episode={item} />}
-        renderSectionHeader={({ section: { season } }) => <SeasonHeader season={season} />}
-      />
-    </View>
+    <SafeAreaView style={styles.container}>
+      <ScrollView style={styles.scrollView}>
+        <StatusBar hidden={false} style="auto" />
+        <SeasonCard season={introduction} />
+        {episodes.map((item, index) => (
+          <Pressable key={index} onPress={() => navigation.navigate('Episode', { title: item.trackName, episode: item })}>
+            <EpisodeItem episode={item} />
+          </Pressable>
+        ))}
+      </ScrollView>
+    </SafeAreaView>
   );
  }
+
+function EpisodeScreen({ route }) {
+  const { episode } = route.params;
+  return (
+    <SafeAreaView style={styles.container}>
+      <ScrollView style={styles.scrollView}>
+        <StatusBar hidden={false} style="auto" />
+        <EpisodeCard episode={episode} />
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
 
 const MoviesStack = createNativeStackNavigator();
 
@@ -442,7 +312,7 @@ function MoviesStackScreen() {
   return (
     <MoviesStack.Navigator>
       <MoviesStack.Screen name="Movies" component={MoviesScreen} />
-      <MoviesStack.Screen name="Movie" component={MovieScreen} options={({ route }) => ({ title: route.params.name })} />
+      <MoviesStack.Screen name="Movie" component={MovieScreen} options={({ route }) => ({ title: route.params.title })} />
     </MoviesStack.Navigator>
   );
 }
@@ -450,15 +320,12 @@ function MoviesStackScreen() {
  function MoviesScreen({ route, navigation }) {
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollView}>
-        <Text>Movies Screen</Text>
-        {movies.results.map((movie, index) => (
-          <Pressable key={index} onPress={() => navigation.navigate('Movie', { name: movie.trackName, movie: movie })}>
-            <Text>{ movie.trackName }</Text>
-          </Pressable>
-        ))}
-        <StatusBar hidden={false} style="auto" />
-      </ScrollView>
+      <StatusBar hidden={false} style="auto" />
+      {movies.results.map((item, index) => (
+        <Pressable key={index} onPress={() => navigation.navigate('Movie', { title: item.trackName, movie: item })}>
+          <MovieItem movie={item} />
+        </Pressable>
+      ))}
     </SafeAreaView>
   );
 }
@@ -466,10 +333,12 @@ function MoviesStackScreen() {
 function MovieScreen({ route }) {
   const { movie } = route.params;
   return (
-    <View>
-      <Text>MovieScreen</Text>
-      <MovieCard movie={movie} />
-    </View>
+    <SafeAreaView style={styles.container}>
+      <ScrollView style={styles.scrollView}>
+        <StatusBar hidden={false} style="auto" />
+        <MovieCard movie={movie} />
+      </ScrollView>
+    </SafeAreaView>
   );
  }
 
@@ -477,8 +346,8 @@ function MovieScreen({ route }) {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
-        <Text>Saved Screen</Text>
         <StatusBar hidden={false} style="auto" />
+        <Text>Saved Screen</Text>        
       </ScrollView>
     </SafeAreaView>
   );
@@ -511,9 +380,6 @@ function MyTabs() {
       <Tab.Screen name="ShowsStack" component={ShowsStackScreen} options={{ headerShown: false, tabBarLabel: "Shows" }} />
       <Tab.Screen name="MoviesStack" component={MoviesStackScreen}  options={{ headerShown: false, tabBarLabel: "Movies" }} />
       <Tab.Screen name="Saved" component={SavedScreen} />
-      {/* <Tab.Screen name="The Next Generation" options={{ tabBarLabel: "TNG" }}>
-        {() => <EpisodesScreen show={tngSeries} />}
-      </Tab.Screen> */}
     </Tab.Navigator>
   );
 }
