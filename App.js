@@ -12,6 +12,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ShowItem, SeasonItem, EpisodeItem, MovieItem } from './components/Items';
 import { ShowCard, SeasonCard, EpisodeCard, MovieCard } from './components/Cards';
+import { BackButton } from './components/Buttons';
 import { formatSeasonData } from './helpers';
 
 const tosSeries = {
@@ -197,8 +198,7 @@ function HomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
-        <StatusBar hidden={false} style="auto" />
-        <Text>Star Trek Episodes</Text>
+      <Text style={{ fontSize: 34, fontWeight: "bold", marginBottom: 10, paddingTop: 20, paddingLeft: 20, }}>Hello</Text>
         <Modal
           animationType="slide"
           presentationStyle="pageSheet"
@@ -236,7 +236,7 @@ const ShowsStack = createNativeStackNavigator();
 
 function ShowsStackScreen() {
   return (
-    <ShowsStack.Navigator>
+    <ShowsStack.Navigator screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#fdfdfd' } }}>
       <ShowsStack.Screen name="Shows" component={ShowsScreen} />
       <ShowsStack.Screen name="Show" component={ShowScreen} options={({ route }) => ({ title: route.params.title })} />
       <ShowsStack.Screen name="Season" component={SeasonScreen} options={({ route }) => ({ title: route.params.title })} />
@@ -248,12 +248,14 @@ function ShowsStackScreen() {
 function ShowsScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar hidden={false} style="auto" />
-      {shows.map((item, index) => (
-        <Pressable key={index} onPress={() => navigation.navigate('Show', { title: item.title, show: item })}>
-          <ShowItem show={item} />
-        </Pressable>
-      ))}
+      <ScrollView style={styles.scrollView}>
+        <Text style={{ fontSize: 34, fontWeight: "bold", marginBottom: 10, paddingTop: 20, paddingLeft: 20, }}>Shows</Text>
+        {shows.map((item, index) => (
+          <Pressable key={index} onPress={() => navigation.navigate('Show', { title: item.title, show: item })}>
+            <ShowItem show={item} />
+          </Pressable>
+        ))}
+      </ScrollView>
     </SafeAreaView>
    );
  }
@@ -263,8 +265,9 @@ function ShowsScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
-        <StatusBar hidden={false} style="auto" />
+        <BackButton navigation={navigation}  />
         <ShowCard show={show} />
+        <Text style={{ fontSize: 22, fontWeight: "bold", marginBottom: 5, paddingLeft: 20, }}>Seasons</Text>
         {show.seasons.map((item, index) => (
           <Pressable key={index} onPress={() => navigation.navigate('Season', { title: `Season ${index + 1}`, season: item })}>
             <SeasonItem season={index} />
@@ -282,8 +285,9 @@ function ShowsScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
-        <StatusBar hidden={false} style="auto" />
+        <BackButton navigation={navigation}  />
         <SeasonCard season={introduction} />
+        <Text style={{ fontSize: 22, fontWeight: "bold", marginBottom: 5, paddingLeft: 20, }}>Episodes</Text>
         {episodes.map((item, index) => (
           <Pressable key={index} onPress={() => navigation.navigate('Episode', { title: item.trackName, episode: item })}>
             <EpisodeItem episode={item} />
@@ -294,12 +298,12 @@ function ShowsScreen({ navigation }) {
   );
  }
 
-function EpisodeScreen({ route }) {
+function EpisodeScreen({ route, navigation }) {
   const { episode } = route.params;
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
-        <StatusBar hidden={false} style="auto" />
+        <BackButton navigation={navigation}  />
         <EpisodeCard episode={episode} />
       </ScrollView>
     </SafeAreaView>
@@ -310,7 +314,7 @@ const MoviesStack = createNativeStackNavigator();
 
 function MoviesStackScreen() {
   return (
-    <MoviesStack.Navigator>
+    <MoviesStack.Navigator screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#fdfdfd' } }}>
       <MoviesStack.Screen name="Movies" component={MoviesScreen} />
       <MoviesStack.Screen name="Movie" component={MovieScreen} options={({ route }) => ({ title: route.params.title })} />
     </MoviesStack.Navigator>
@@ -320,22 +324,24 @@ function MoviesStackScreen() {
  function MoviesScreen({ route, navigation }) {
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar hidden={false} style="auto" />
-      {movies.results.map((item, index) => (
-        <Pressable key={index} onPress={() => navigation.navigate('Movie', { title: item.trackName, movie: item })}>
-          <MovieItem movie={item} />
-        </Pressable>
-      ))}
+      <ScrollView style={styles.scrollView}>
+        <Text style={{ fontSize: 34, fontWeight: "bold", marginBottom: 10, paddingTop: 20, paddingLeft: 20, }}>Movies</Text>
+        {movies.results.map((item, index) => (
+          <Pressable key={index} onPress={() => navigation.navigate('Movie', { title: item.trackName, movie: item })}>
+            <MovieItem movie={item} />
+          </Pressable>
+        ))}
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
-function MovieScreen({ route }) {
+function MovieScreen({ route, navigation }) {
   const { movie } = route.params;
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
-        <StatusBar hidden={false} style="auto" />
+        <BackButton navigation={navigation}  />
         <MovieCard movie={movie} />
       </ScrollView>
     </SafeAreaView>
@@ -346,8 +352,7 @@ function MovieScreen({ route }) {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
-        <StatusBar hidden={false} style="auto" />
-        <Text>Saved Screen</Text>        
+        <Text style={{ fontSize: 34, fontWeight: "bold", marginBottom: 1, }}>Saved</Text>
       </ScrollView>
     </SafeAreaView>
   );
@@ -376,10 +381,10 @@ function MyTabs() {
         tabBarInactiveTintColor: '#3C3C43',
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
       <Tab.Screen name="ShowsStack" component={ShowsStackScreen} options={{ headerShown: false, tabBarLabel: "Shows" }} />
       <Tab.Screen name="MoviesStack" component={MoviesStackScreen}  options={{ headerShown: false, tabBarLabel: "Movies" }} />
-      <Tab.Screen name="Saved" component={SavedScreen} />
+      <Tab.Screen name="Saved" component={SavedScreen} options={{ headerShown: false }} />
     </Tab.Navigator>
   );
 }
@@ -395,9 +400,10 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     paddingTop: StatusBar.currentHeight,
+    backgroundColor: '#fdfdfd',
   },
   scrollView: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 0,
   },
   modalView: {
     alignItems: "center",

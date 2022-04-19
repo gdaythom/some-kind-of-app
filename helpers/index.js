@@ -51,7 +51,11 @@ const randomIntFromInterval = (min, max) => {
   Get the season title from the show title
 */
 const getShowSeasonTitle = (artist, collection) => {
-  return artist.replace(`${collection}, `, '');
+  return collection.replace(`${artist}, `, '');
+}
+
+const getShowSeasonNumber = (artist, collection) => {
+  return artist.replace(`${collection}, Season `, '');
 }
 
 const getSearchTerm = (term) => {
@@ -69,7 +73,7 @@ const getYear = (date) => {
 const getDate = (date) => {
   var d = new Date(date);
   return d.toLocaleDateString('en-gb', {
-    year: 'numeric', month: 'long', day: 'numeric'
+    year: 'numeric', month: 'short', day: 'numeric'
   });
 }
 
@@ -94,9 +98,7 @@ const getShowEpisodeCount = (show) => {
 }
 
 const getSeasonEpisodeCount = (season) => {
-  return season.data.length - 1;
-  // console.log(season);
-  // return 999;
+  return season.length - 1;
 }
 
 const getReleaseDate = (date) => {
@@ -105,11 +107,11 @@ const getReleaseDate = (date) => {
 
 const getRuntime = (milliseconds) => {
   const minutes = Math.floor(( milliseconds / 1000) / 60);
-  return `${minutes} minutes`;
+  return `${minutes}m`;
 }
 
 const removeHtmlTags = (string) => {
   return string.replace(/(<([^>]+)>)/gi, "");
 }
 
-export { stripHtml, formatSeasonData, getShowSeasonTitle, getSearchTerm, getYear, getShowRun, getShowSeasonCount, getShowEpisodeCount, getSeasonEpisodeCount, getReleaseDate, getRuntime, removeHtmlTags };
+export { stripHtml, formatSeasonData, getShowSeasonTitle, getShowSeasonNumber, getSearchTerm, getYear, getShowRun, getShowSeasonCount, getShowEpisodeCount, getSeasonEpisodeCount, getReleaseDate, getRuntime, removeHtmlTags };

@@ -1,14 +1,17 @@
 import React from 'react';
 import { View, Text } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 const ShowItem= ({ show }) => {
   return(
-    <View style={{ flexDirection: "row", alignItems: "center", }}>
-      <View style={{ flex: 1, }}>
-        <Text style={{ fontSize: 17, fontWeight: "bold", marginBottom: 1, }}>{ show.title }</Text>
+    <View style={{ paddingLeft: 20, }}>
+      <View style={{ flexDirection: "row", alignItems: "center", paddingTop: 10, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#C6C6C8' }}>
+        <View style={{ flex: 1, verticalAlign: 'middle', }}>
+          <Text style={{ fontSize: 21, color: '#3478F6', }}>{ show.title }</Text>
         </View>
-      <View style={{ padding: 8, }}>
-        <Text>></Text>
+        <View style={{ alignItems: 'stretch', verticalAlign: 'middle', paddingRight: 20, }}>
+          <Ionicons name="chevron-forward" size={24} color="#AAAAAA" />
+        </View>
       </View>
     </View>
   ); 
@@ -16,12 +19,14 @@ const ShowItem= ({ show }) => {
 
 const SeasonItem= ({ season }) => {
   return(
-    <View style={{ flexDirection: "row", alignItems: "center", }}>
-      <View style={{ flex: 1, }}>
-        <Text style={{ fontSize: 17, fontWeight: "bold", marginBottom: 1, }}>Season { season + 1 }</Text>
-      </View>
-      <View style={{ padding: 8, }}>
-        <Text>></Text>
+    <View style={{ paddingLeft: 20, }}>
+      <View style={{ flexDirection: "row", alignItems: "center", paddingTop: 10, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#C6C6C8' }}>
+        <View style={{ flex: 1, verticalAlign: 'middle', }}>
+          <Text style={{ fontSize: 21, color: '#3478F6', }}>Season { season + 1 }</Text>
+        </View>
+        <View style={{ alignItems: 'stretch', verticalAlign: 'middle', paddingRight: 20, }}>
+          <Ionicons name="chevron-forward" size={24} color="#AAAAAA" />
+        </View>
       </View>
     </View>
   ); 
@@ -29,13 +34,15 @@ const SeasonItem= ({ season }) => {
 
 const EpisodeItem = ({ episode }) => {
   return(
-    <View style={{ flexDirection: "row", alignItems: "center", }}>
-      <View style={{ flex: 1, }}>
-        <Text style={{ fontSize: 17, fontWeight: "bold", marginBottom: 1, }}>{ episode.trackNumber }. { episode.trackName }</Text>
-        <Text style={{ fontSize: 17, }}>{ episode.shortDescription }...</Text>
-      </View>
-      <View style={{ padding: 8, }}>
-        <Text>></Text>
+    <View style={{ paddingLeft: 20, }}>
+      <View style={{ flexDirection: "row", alignItems: "center", paddingTop: 10, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#C6C6C8' }}>
+        <View style={{ flex: 1, verticalAlign: 'middle', }}>
+          <Text style={{ fontSize: 21, color: '#3478F6', }}>{ episode.trackNumber }. { episode.trackName }</Text>
+          <Text style={{ fontSize: 12, }}>{ episode.shortDescription }...</Text>
+        </View>
+        <View style={{ alignItems: 'stretch', verticalAlign: 'middle', paddingRight: 20, }}>
+          <Ionicons name="chevron-forward" size={24} color="#AAAAAA" />
+        </View>
       </View>
     </View>
   );
@@ -43,12 +50,14 @@ const EpisodeItem = ({ episode }) => {
 
 const MovieItem = ({ movie }) => {
   return(
-    <View style={{ flexDirection: "row", alignItems: "center", }}>
-      <View style={{ flex: 1, }}>
-        <Text style={{ fontSize: 17, fontWeight: "bold", marginBottom: 1, }}>{ movie.trackName }</Text>
-      </View>
-      <View style={{ padding: 8, }}>
-        <Text>></Text>
+    <View style={{ paddingLeft: 20, }}>
+      <View style={{ flexDirection: "row", alignItems: "center", paddingTop: 10, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#C6C6C8' }}>
+        <View style={{ flex: 1, verticalAlign: 'middle', }}>
+          <Text style={{ fontSize: 21, color: '#3478F6', }}>{ movie.trackName }</Text>
+        </View>
+        <View style={{ alignItems: 'stretch', verticalAlign: 'middle', paddingRight: 20, }}>
+          <Ionicons name="chevron-forward" size={24} color="#AAAAAA" />
+        </View>
       </View>
     </View>
   );
