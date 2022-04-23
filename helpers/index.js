@@ -106,12 +106,23 @@ const getReleaseDate = (date) => {
 }
 
 const getRuntime = (milliseconds) => {
-  const minutes = Math.floor(( milliseconds / 1000) / 60);
-  return `${minutes}m`;
+  const episodeInMinutes = Math.floor(( milliseconds / 1000) / 60);
+  const hours = Math.floor( episodeInMinutes / 60 );
+  const episodeInHours = hours * 60;
+  const minutes = episodeInMinutes - episodeInHours;
+  return (hours) ? `${hours}h ${minutes}m` : `${minutes}m`;
 }
 
 const removeHtmlTags = (string) => {
   return string.replace(/(<([^>]+)>)/gi, "");
 }
 
-export { stripHtml, formatSeasonData, getShowSeasonTitle, getShowSeasonNumber, getSearchTerm, getYear, getShowRun, getShowSeasonCount, getShowEpisodeCount, getSeasonEpisodeCount, getReleaseDate, getRuntime, removeHtmlTags };
+const getRandomEpisode = (seasons) => {
+  const randomSeason = randomIntFromInterval(0, seasons.length - 1);
+  let season = seasons[randomSeason];
+  let episodes = season.results;
+  const randomEpisode = randomIntFromInterval(1, episodes.length - 1);
+  return episodes[randomEpisode];
+}
+
+export { stripHtml, formatSeasonData, getShowSeasonTitle, getShowSeasonNumber, getSearchTerm, getYear, getShowRun, getShowSeasonCount, getShowEpisodeCount, getSeasonEpisodeCount, getReleaseDate, getRuntime, removeHtmlTags, getRandomEpisode };

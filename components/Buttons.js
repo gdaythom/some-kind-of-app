@@ -11,11 +11,11 @@ const PlayButton = ({ webUrl }) => {
   };
   return(
     <Pressable onPress={_handlePressButtonAsync} style={{ backgroundColor: '#eeeeef', flex: 1, flexDirection: "row", borderRadius: 10, padding: 10, }}>
-      <View style={{ alignItems: 'flex-end', paddingRight: 5, verticalAlign: 'middle', width: '50%', }}>
-        <Ionicons name="play" size={24} color="#3478F6" />
+      <View style={{ alignItems: 'flex-end', paddingRight: 5, verticalAlign: 'middle', width: '45%', }}>
+        <Ionicons name="ios-search-sharp" size={24} color="#3478F6" />
       </View>
-      <View style={{ alignItems: 'stretch', paddingLeft: 5, verticalAlign: 'middle', width: '50%', }}>
-        <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#3478F6', margin: 0, paddingTop: 2, }}>Play</Text>
+      <View style={{ alignItems: 'stretch', paddingLeft: 5, verticalAlign: 'middle', width: '55%', }}>
+        <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#3478F6', margin: 0, paddingTop: 2, }}>Search</Text>
       </View>
     </Pressable>
   );
@@ -24,9 +24,17 @@ const PlayButton = ({ webUrl }) => {
 const BackButton = ({ navigation }) => {
   return (
     <Pressable onPress={() => navigation.goBack()} style={{ paddingTop: 20, paddingLeft: 5, }}>
-      <Ionicons name="chevron-back-sharp" size={34} color="#3478F6" />
+      <Ionicons name="ios-chevron-back-circle-sharp" size={34} color="#3478F6" />
     </Pressable>
   );
 }
 
-export { PlayButton, BackButton };
+const CloseButton = ({ navigation }) => {
+  return (
+    <Pressable onPress={() => navigation.goBack()}>
+      <Ionicons name="ios-close-circle-sharp" size={34} color="#3478F6" />
+    </Pressable>
+  );
+}
+
+export { PlayButton, BackButton, CloseButton };
