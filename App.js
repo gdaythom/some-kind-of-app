@@ -42,6 +42,8 @@ function HomeScreen({ navigation }) {
     refreshRandomEpisodes();
   }
 
+
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView} stickyHeaderIndices={[0]}>
