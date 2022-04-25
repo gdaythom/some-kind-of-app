@@ -8,10 +8,10 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { getRandomEpisode } from './helpers';
-import { ShowItem, SeasonItem, EpisodeItem, MovieItem, PlaylistItem } from './components/Items';
+import { ShowItem, SeasonItem, EpisodeItem, MovieItem, PlaylistSectionHeader, PlaylistItem, PlaylistEpisodeItem } from './components/Items';
 import { ShowCard, SeasonCard, EpisodeCard, RandomEpisodeCard, MovieCard, PlaylistCard } from './components/Cards';
 import { BackButton, CloseButton } from './components/Buttons';
-import { Shows as shows, Movies as movies, Playlists as playlists, TngSeries as tngSeries } from './media';
+import { Shows as shows, Movies as movies, Playlists as playlists, TwoParters  as twoParters, ThreeParters as threeParters, TngSeries as tngSeries } from './media';
 
 
 const HomeStack = createNativeStackNavigator();
@@ -52,7 +52,7 @@ function HomeScreen({ navigation }) {
             </View>
             <View style={{ marginLeft: 'auto', paddingRight: 20, }}>
               <Pressable onPress={() => refreshRandomEpisodes()} style={{ backgroundColor: '#eeeeef', borderRadius: 10, padding: 10, }}>
-                <Ionicons name="reload" size={24} color="#3478F6" />
+                <Ionicons name="ios-refresh-sharp" size={24} color="#3478F6" />
               </Pressable>
             </View>
           </View>
@@ -218,8 +218,10 @@ function MovieScreen({ route, navigation }) {
 
  function PlaylistStackScreen() {
    return (
-     <PlaylistStack.Navigator screenOptions={{ headerShown: false, presentation: 'modal', contentStyle: { backgroundColor: '#fdfdfd' } }}>
-       <PlaylistStack.Screen name="Playlist" component={PlaylistScreen} />
+     <PlaylistStack.Navigator screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#fdfdfd' } }}>
+       <PlaylistStack.Screen name="Playlists" component={PlaylistsScreen} />
+       <PlaylistStack.Screen name="SinglePlaylist" component={SinglePlaylistScreen} />
+       <PlaylistStack.Screen name="MultiplePlaylist" component={MultiplePlaylistScreen} />
        <PlaylistStack.Group screenOptions={{ presentation: 'modal' }}>
         <PlaylistStack.Screen name="PlaylistEpisode" component={PlaylistEpisodeScreen} options={({ route }) => ({ title: route.params.title })} />
       </PlaylistStack.Group>
@@ -227,22 +229,73 @@ function MovieScreen({ route, navigation }) {
    );
  }
 
- function PlaylistScreen({ route, navigation }) {
+ function PlaylistsScreen({ route, navigation }) {
+  const twoPartersItem = { title: 'Two Parters' };
+  const threePartersItem = { title: 'Three Parters' };
   return (
     <SafeAreaView style={styles.container}>
-      <View>
-        <SectionList
-          ListHeaderComponent={<Text style={{ fontSize: 34, fontWeight: "bold", marginBottom: 10, paddingTop: 20, paddingLeft: 20, }}>Playlists</Text>}
-          sections={playlists}
-          keyExtractor={(item, index) => item + index}
-          renderItem={({ item, index }) => (
+      <ScrollView style={styles.scrollView}>
+        <Text style={{ fontSize: 34, fontWeight: "bold", marginBottom: 10, paddingTop: 20, paddingLeft: 20, }}>Playlists</Text>
+        <Pressable onPress={() => navigation.navigate('MultiplePlaylist', { title: twoPartersItem.title, playlist: twoParters })}>
+          <PlaylistItem playlist={twoPartersItem} />
+        </Pressable>
+        <Pressable onPress={() => navigation.navigate('MultiplePlaylist', { title: threePartersItem.title, playlist: threeParters })}>
+          <PlaylistItem playlist={threePartersItem} />
+        </Pressable>
+        {playlists.map((item, index) => (
+          <Pressable key={index} onPress={() => navigation.navigate('SinglePlaylist', { title: item.title, playlist: item })}>
+            <PlaylistItem playlist={item} />
+          </Pressable>
+        ))}
+      </ScrollView>
+
+    </SafeAreaView>
+  );
+}
+
+function SinglePlaylistScreen({ route, navigation }) {
+  const { playlist } = route.params;
+  const episodes = playlist.data;
+  return (
+    <SafeAreaView style={styles.container}>
+      <ScrollView style={styles.scrollView}>
+        <View style={{ paddingTop: 20, paddingHorizontal: 5, }}>
+          <BackButton navigation={navigation} />
+        </View>
+        <PlaylistCard playlist={playlist} />
+        <View style={{ backgroundColor: '#F2F2F7', paddingVertical: 20, }}>
+          <Text style={{ fontSize: 22, fontWeight: "bold", marginBottom: 5, paddingLeft: 20, }}>Episodes</Text>
+          {episodes.map((item, index) => (
             <Pressable key={index} onPress={() => navigation.navigate('PlaylistEpisode', { title: item.trackName, episode: item })}>
-              <PlaylistItem episode={item} />
+              <PlaylistEpisodeItem episode={item} />
             </Pressable>
-          )}
-          renderSectionHeader={({ section: { title } }) => <PlaylistCard title={title} />}
-        />
-      </View>
+          ))}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+ }
+
+function MultiplePlaylistScreen({ route, navigation }) {
+  const { title, playlist } = route.params;
+  return (
+    <SafeAreaView style={styles.container}>
+      <SectionList
+        ListHeaderComponent={
+          <View style={{ paddingTop: 20, paddingHorizontal: 5, }}>
+          <BackButton navigation={navigation} />
+          <Text style={{ fontSize: 34, fontWeight: "bold", marginBottom: 10, paddingTop: 20, paddingLeft: 15, }}>{ title }</Text>
+        </View>
+      }
+        sections={playlist}
+        keyExtractor={(item, index) => item + index}
+        renderItem={({ item, index }) => (
+          <Pressable key={index} onPress={() => navigation.navigate('PlaylistEpisode', { title: item.trackName, episode: item })}>
+            <PlaylistEpisodeItem episode={item} />
+          </Pressable>
+        )}
+        renderSectionHeader={({ section: { title } }) => <PlaylistSectionHeader title={title} />}
+      />
     </SafeAreaView>
   );
 }
@@ -281,7 +334,7 @@ function MyTabs() {
         tabBarIcon: ({ focused, color, size }) => {
           let iconName = focused ? 'ios-list-sharp' : 'ios-list-sharp';
 
-          if (route.name === 'Home') {
+          if (route.name === 'HomeStack') {
             iconName = focused
               ? 'ios-home-sharp'
               : 'ios-home-sharp';

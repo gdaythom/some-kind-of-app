@@ -101,6 +101,10 @@ const getSeasonEpisodeCount = (season) => {
   return season.length - 1;
 }
 
+const getPlaylistEpisodeCount = (playlist) => {
+  return playlist.data.length;
+}
+
 const getReleaseDate = (date) => {
   return getDate(date);
 }
@@ -125,4 +129,4 @@ const getRandomEpisode = (seasons) => {
   return episodes[randomEpisode];
 }
 
-export { stripHtml, formatSeasonData, getShowSeasonTitle, getShowSeasonNumber, getSearchTerm, getYear, getShowRun, getShowSeasonCount, getShowEpisodeCount, getSeasonEpisodeCount, getReleaseDate, getRuntime, removeHtmlTags, getRandomEpisode };
+export { stripHtml, formatSeasonData, getShowSeasonTitle, getShowSeasonNumber, getSearchTerm, getYear, getShowRun, getShowSeasonCount, getShowEpisodeCount, getPlaylistEpisodeCount, getSeasonEpisodeCount, getReleaseDate, getRuntime, removeHtmlTags, getRandomEpisode };

@@ -165,6 +165,4 @@ const EntSeries = {
   ]
 };
 
-
-
 export { TosSeries, TngSeries, Ds9Series, VoySeries, EntSeries };

@@ -64,7 +64,28 @@ const MovieItem = ({ movie }) => {
   );
 }
 
-const PlaylistItem = ({ episode }) => {
+const PlaylistSectionHeader = ({ title }) => {
+  return(
+    <Text style={{ backgroundColor: '#ffffff', fontSize: 22, fontWeight: "bold", paddingTop: 15, paddingBottom: 5, paddingLeft: 20, }}>{ title }</Text>
+  );
+}
+
+const PlaylistItem = ({ playlist }) => {
+  return(
+    <View style={{ paddingLeft: 20, }}>
+      <View style={{ flexDirection: "row", alignItems: "center", paddingTop: 10, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#C6C6C8' }}>
+        <View style={{ flex: 1, verticalAlign: 'middle', }}>
+          <Text style={{ fontSize: 21, color: '#3478F6', }}>{ playlist.title }</Text>
+        </View>
+        <View style={{ alignItems: 'stretch', verticalAlign: 'middle', paddingRight: 20, }}>
+          <Ionicons name="chevron-forward" size={24} color="#AAAAAA" />
+        </View>
+      </View>
+    </View>
+  ); 
+}
+
+const PlaylistEpisodeItem = ({ episode }) => {
   return(
     <View style={{ paddingLeft: 20, }}>
       <View style={{ flexDirection: "row", alignItems: "center", paddingTop: 10, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#C6C6C8' }}>
@@ -81,4 +102,4 @@ const PlaylistItem = ({ episode }) => {
   );
 }
 
-export { ShowItem, SeasonItem, EpisodeItem, MovieItem, PlaylistItem };
+export { ShowItem, SeasonItem, EpisodeItem, MovieItem, PlaylistSectionHeader, PlaylistItem, PlaylistEpisodeItem };

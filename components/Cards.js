@@ -4,7 +4,7 @@ import RenderHtml from 'react-native-render-html';
 import { Video } from 'expo-av';
 import { PlayButton } from './Buttons';
 
-import { getShowRun, getShowSeasonTitle, getShowSeasonNumber, getSearchTerm, getShowSeasonCount, getYear, getReleaseDate, getRuntime, removeHtmlTags } from '../helpers';
+import { getShowRun, getShowSeasonTitle, getShowSeasonNumber, getSearchTerm, getShowSeasonCount, getPlaylistEpisodeCount, getYear, getReleaseDate, getRuntime, removeHtmlTags } from '../helpers';
 
 
 const ShowCard = ({ show }) => {
@@ -131,10 +131,13 @@ const MovieCard = ({ movie }) => {
   );
 }
 
-const PlaylistCard = ({ title }) => {
+const PlaylistCard = ({ playlist }) => {
   return (
-    <View style={{ backgroundColor: '#fdfdfd', paddingTop: 20, paddingLeft: 20 }}>
-      <Text style={{ fontSize: 22, fontWeight: 'bold', }}>{ title }</Text>
+    <View style={{ backgroundColor: '#fdfdfd', padding: 20 }}>
+      <Text style={{ fontSize: 16, fontWeight: 'bold', textAlign: 'center', marginBottom: 5, }}>&nbsp;</Text>
+      <Text style={{ fontSize: 22, fontWeight: 'bold', textAlign: 'center', marginBottom: 5, }}>{ playlist.title }</Text>
+      <Text style={{ fontSize: 14, textAlign: 'center', color: '#4C4C4C', marginBottom: 20, }}>{ getPlaylistEpisodeCount(playlist) } episodes</Text>
+      <Text style={{ fontSize: 17, marginBottom: 1, }}>&nbsp;</Text>
     </View>
   );
 }
