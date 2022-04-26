@@ -2,7 +2,7 @@ import React from 'react';
 import { useWindowDimensions, View, Modal, Pressable, Alert, Text, Image } from 'react-native';
 import RenderHtml from 'react-native-render-html';
 import { Video } from 'expo-av';
-import { SearchButton, ShareButton } from './Buttons';
+import { SearchButton, SaveButton, ShareButton } from './Buttons';
 
 import { getShowRun, getShowSeasonTitle, getShowSeasonNumber, getSearchTerm, getShowSeasonCount, getPlaylistEpisodeCount, getYear, getReleaseDate, getRuntime, removeHtmlTags } from '../helpers';
 
@@ -72,10 +72,13 @@ const EpisodeCard = ({ episode }) => {
       <Text style={{ fontSize: 22, fontWeight: 'bold', textAlign: 'center', marginBottom: 5, }}>{ episode.trackName }</Text>
       <Text style={{ fontSize: 14, textAlign: 'center', color: '#4C4C4C', marginBottom: 20, }}>{ getReleaseDate(episode.releaseDate) } • { getRuntime(episode.trackTimeMillis) }</Text>
       <View style={{ flex: 1, flexDirection: 'row', }}>
-        <View style={{ width: '50%', paddingRight: 10, }}>
-          <SearchButton webUrl={webUrl} />
+        <View style={{ width: '33%', paddingRight: 10, }}>
+          <SearchButton webUrl={ webUrl } />
         </View>
-        <View style={{ width: '50%', paddingLeft: 10, }}>
+        <View style={{ width: '33%', paddingRight: 10, }}>
+          <SaveButton episode={ episode } />
+        </View>
+        <View style={{ width: '33%', paddingLeft: 10, }}>
           <ShareButton message={ message } />
         </View>
       </View>

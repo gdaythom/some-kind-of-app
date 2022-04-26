@@ -6,6 +6,7 @@ import * as Haptics from 'expo-haptics';
 import { NavigationContainer, useScrollToTop } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { getRandomEpisode } from './helpers';
 import { ShowItem, SeasonItem, EpisodeItem, MovieItem, PlaylistSectionHeader, PlaylistItem, PlaylistEpisodeItem } from './components/Items';
@@ -317,15 +318,42 @@ function PlaylistEpisodeScreen({ route, navigation }) {
   );
 }
 
-// function SavedScreen() {
-//   return (
-//     <SafeAreaView style={styles.container}>
-//       <ScrollView style={styles.scrollView}>
-//         <Text style={{ fontSize: 34, fontWeight: "bold", marginBottom: 1, }}>Saved</Text>
-//       </ScrollView>
-//     </SafeAreaView>
-//   );
-// }
+function FavouritesScreen() {
+  var jsonValue = [];
+  const getData = async () => {
+    try {
+      jsonValue = await AsyncStorage.getItem('@storage_Key');
+      console.log(jsonValue);
+      return jsonValue != [] ? JSON.parse(jsonValue) : [];
+    } catch(e) {
+      // error reading value
+    }
+  }
+  const getAllKeys = async () => {
+    let keys = []
+    try {
+      keys = await AsyncStorage.getAllKeys()
+    } catch(e) {
+      // read key error
+    }
+  
+    console.log(keys)
+    // example console.log result:
+    // ['@MyApp_user', '@MyApp_key']
+  }
+  getData();
+  getAllKeys();
+  return (
+    <SafeAreaView style={styles.container}>
+      <ScrollView style={styles.scrollView}>
+        <Text style={{ fontSize: 34, fontWeight: "bold", marginBottom: 10, paddingTop: 20, paddingLeft: 20, }}>Favourites</Text>
+        {jsonValue.map((item, index) => (
+          <Text>{{ item }}</Text>
+        ))}
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
 
 const Tab = createBottomTabNavigator();
 
@@ -351,6 +379,11 @@ function MyTabs() {
               ? 'ios-film-sharp'
               : 'ios-film-sharp';
           }
+          if (route.name === 'Favourites') {
+            iconName = focused
+              ? 'ios-heart-sharp'
+              : 'ios-heart-sharp';
+          }
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
@@ -359,10 +392,11 @@ function MyTabs() {
       })}
     >
       <Tab.Screen name="HomeStack" component={HomeStackScreen} options={{ headerShown: false, tabBarLabel: "Home" }} />
+      <Tab.Screen name="PlaylistStack" component={PlaylistStackScreen} options={{ headerShown: false, tabBarLabel: "Playlists" }} />
+      <Tab.Screen name="Favourites" component={FavouritesScreen} options={{ headerShown: false }} />
       <Tab.Screen name="ShowsStack" component={ShowsStackScreen} options={{ headerShown: false, tabBarLabel: "Shows" }} />
       <Tab.Screen name="MoviesStack" component={MoviesStackScreen}  options={{ headerShown: false, tabBarLabel: "Movies" }} />
-      {/* <Tab.Screen name="Saved" component={SavedScreen} options={{ headerShown: false }} /> */}
-      <Tab.Screen name="PlaylistStack" component={PlaylistStackScreen} options={{ headerShown: false, tabBarLabel: "Playlists" }} />
+
     </Tab.Navigator>
   );
 }

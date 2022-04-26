@@ -21,6 +21,28 @@ const SearchButton = ({ webUrl }) => {
   );
 }
 
+const SaveButton = ({ episode }) => {
+  const _storeData = async () => {
+    try {
+      const jsonValue = JSON.stringify(episode);
+      console.log(jsonValue);
+      await AsyncStorage.setItem('@storage_Key', jsonValue);
+    } catch (e) {
+      // saving error
+    }
+  }
+  return(
+    <Pressable onPress={_storeData} style={{ backgroundColor: '#eeeeef', flex: 1, flexDirection: "row", borderRadius: 10, padding: 10, }}>
+      <View style={{ alignItems: 'flex-end', paddingRight: 5, verticalAlign: 'middle', width: '40%', }}>
+        <Ionicons name="ios-heart-sharp" size={24} color="#3478F6" />
+      </View>
+      <View style={{ alignItems: 'stretch', paddingLeft: 5, verticalAlign: 'middle', width: '60%', }}>
+        <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#3478F6', margin: 0, paddingTop: 2, }}>Save</Text>
+      </View>
+    </Pressable>
+  );
+}
+
 const ShareButton = ({ message }) => {
   const _onShare = async () => {
     try {
@@ -68,4 +90,4 @@ const CloseButton = ({ navigation }) => {
   );
 }
 
-export { SearchButton, ShareButton, BackButton, CloseButton };
+export { SearchButton, SaveButton, ShareButton, BackButton, CloseButton };
