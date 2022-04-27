@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { useWindowDimensions, StyleSheet, Pressable, Text, Modal, Alert, Image, View, SafeAreaView, ScrollView, SectionList } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -318,38 +318,67 @@ function PlaylistEpisodeScreen({ route, navigation }) {
   );
 }
 
-function FavouritesScreen() {
-  var jsonValue = [];
+const FavouriteStack = createNativeStackNavigator();
+
+function FavouriteStackScreen() {
+  return (
+    <FavouriteStack.Navigator screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#fdfdfd' } }}>
+      <FavouriteStack.Screen name="Favourites" component={FavouritesScreen} />
+      <FavouriteStack.Group screenOptions={{ presentation: 'modal' }}>
+       <FavouriteStack.Screen name="FavouriteEpisode" component={FavouritesEpisodeScreen} options={({ route }) => ({ title: route.params.title })} />
+     </FavouriteStack.Group>
+    </FavouriteStack.Navigator>
+  );
+}
+
+function FavouritesScreen({ route, navigation }) {
+  const [favouriteEpisodes, setFavouriteEpisodes] = useState([]);
+
   const getData = async () => {
     try {
-      jsonValue = await AsyncStorage.getItem('@storage_Key');
-      console.log(jsonValue);
-      return jsonValue != [] ? JSON.parse(jsonValue) : [];
+      let jsonValue = await AsyncStorage.getItem('favouriteEpisodes');
+      jsonValue = JSON.parse(jsonValue);
+      if (jsonValue !== null) {
+        setFavouriteEpisodes(jsonValue);
+      }
     } catch(e) {
-      // error reading value
+      alert(e);
     }
   }
-  const getAllKeys = async () => {
-    let keys = []
-    try {
-      keys = await AsyncStorage.getAllKeys()
-    } catch(e) {
-      // read key error
-    }
-  
-    console.log(keys)
-    // example console.log result:
-    // ['@MyApp_user', '@MyApp_key']
-  }
-  getData();
-  getAllKeys();
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      getData();
+    });
+    return unsubscribe;
+  }, [navigation]);
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
         <Text style={{ fontSize: 34, fontWeight: "bold", marginBottom: 10, paddingTop: 20, paddingLeft: 20, }}>Favourites</Text>
-        {jsonValue.map((item, index) => (
-          <Text>{{ item }}</Text>
-        ))}
+        {favouriteEpisodes && favouriteEpisodes.length !== 0 &&
+          favouriteEpisodes.map((item, index) => (
+            <Pressable key={index} onPress={() => navigation.navigate('FavouriteEpisode', { title: item.trackName, episode: item })}>
+              <PlaylistEpisodeItem episode={item} />
+            </Pressable>
+          ))
+        }
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+function FavouritesEpisodeScreen({ route, navigation }) {
+  const { episode } = route.params;
+  return (
+    <SafeAreaView style={styles.container}>
+      <StatusBar style='light' />
+      <ScrollView style={styles.scrollView}>
+        <View style={{ paddingTop: 20, paddingHorizontal: 5, alignItems: 'flex-end' }}>
+          <CloseButton navigation={navigation} />
+        </View>
+        <EpisodeCard episode={episode} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -379,7 +408,7 @@ function MyTabs() {
               ? 'ios-film-sharp'
               : 'ios-film-sharp';
           }
-          if (route.name === 'Favourites') {
+          if (route.name === 'FavouriteStack') {
             iconName = focused
               ? 'ios-heart-sharp'
               : 'ios-heart-sharp';
@@ -393,7 +422,7 @@ function MyTabs() {
     >
       <Tab.Screen name="HomeStack" component={HomeStackScreen} options={{ headerShown: false, tabBarLabel: "Home" }} />
       <Tab.Screen name="PlaylistStack" component={PlaylistStackScreen} options={{ headerShown: false, tabBarLabel: "Playlists" }} />
-      <Tab.Screen name="Favourites" component={FavouritesScreen} options={{ headerShown: false }} />
+      <Tab.Screen name="FavouriteStack" component={FavouriteStackScreen} options={{ headerShown: false, tabBarLabel: "Favourites" }} />
       <Tab.Screen name="ShowsStack" component={ShowsStackScreen} options={{ headerShown: false, tabBarLabel: "Shows" }} />
       <Tab.Screen name="MoviesStack" component={MoviesStackScreen}  options={{ headerShown: false, tabBarLabel: "Movies" }} />
 

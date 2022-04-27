@@ -82,7 +82,6 @@ const EpisodeCard = ({ episode }) => {
           <ShareButton message={ message } />
         </View>
       </View>
-
       <Text style={{ fontSize: 16, marginTop: 20, }}><Text style={{ fontWeight: 'bold', }}>S{getShowSeasonNumber(episode.collectionName, episode.artistName)} E{ episode.trackNumber }:</Text> { episode.longDescription }</Text>
     </View>
   );
@@ -120,6 +119,7 @@ const MovieCard = ({ movie }) => {
   const video = React.useRef(null);
   const [status, setStatus] = React.useState({});
   const webUrl = getSearchTerm(movie.trackName);
+  const message = `I'm wathcing ${movie.trackName}`;
   return(
     <View style={{ backgroundColor: '#fdfdfd', padding: 20 }}>
       <View style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.4, shadowRadius: 12, }}>
@@ -137,7 +137,14 @@ const MovieCard = ({ movie }) => {
       </View>
       <Text style={{ fontSize: 22, fontWeight: 'bold', textAlign: 'center', marginBottom: 5, }}>{ movie.trackName }</Text>
       <Text style={{ fontSize: 14, textAlign: 'center', color: '#4C4C4C', marginBottom: 20, }}>{ getYear(movie.releaseDate) } • { getRuntime(movie.trackTimeMillis) } • { movie.contentAdvisoryRating }</Text>
-      <PlayButton webUrl={webUrl} />
+      <View style={{ flex: 1, flexDirection: 'row', }}>
+        <View style={{ width: '50%', paddingRight: 10, }}>
+          <SearchButton webUrl={ webUrl } />
+        </View>
+        <View style={{ width: '50%', paddingLeft: 10, }}>
+          <ShareButton message={ message } />
+        </View>
+      </View>
       <Text style={{ fontSize: 16, marginTop: 20, }}>{ movie.longDescription }</Text>
     </View>
   );

@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Pressable, Text, Share } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import * as WebBrowser from 'expo-web-browser';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SearchButton = ({ webUrl }) => {
   const [result, setResult] = React.useState(null);
@@ -24,11 +25,14 @@ const SearchButton = ({ webUrl }) => {
 const SaveButton = ({ episode }) => {
   const _storeData = async () => {
     try {
-      const jsonValue = JSON.stringify(episode);
-      console.log(jsonValue);
-      await AsyncStorage.setItem('@storage_Key', jsonValue);
+      let existingValue = await AsyncStorage.getItem('favouriteEpisodes');
+      existingValue = JSON.parse(existingValue);
+      console.log(typeof existingValue);
+      existingValue.push(episode);
+      const jsonValue = JSON.stringify(existingValue);
+      await AsyncStorage.setItem('favouriteEpisodes', jsonValue);
     } catch (e) {
-      // saving error
+      alert(e);
     }
   }
   return(
