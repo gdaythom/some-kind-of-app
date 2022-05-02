@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Pressable, Text, Share } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import * as WebBrowser from 'expo-web-browser';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { inStorage, handleStorage } from '../helpers';
 
 const SearchButton = ({ webUrl }) => {
   const [result, setResult] = React.useState(null);
@@ -11,38 +11,30 @@ const SearchButton = ({ webUrl }) => {
     setResult(result);
   };
   return(
-    <Pressable onPress={_handlePressButtonAsync} style={{ backgroundColor: '#eeeeef', flex: 1, flexDirection: "row", borderRadius: 10, padding: 10, }}>
-      <View style={{ alignItems: 'flex-end', paddingRight: 5, verticalAlign: 'middle', width: '40%', }}>
-        <Ionicons name="ios-search-sharp" size={24} color="#3478F6" />
-      </View>
-      <View style={{ alignItems: 'stretch', paddingLeft: 5, verticalAlign: 'middle', width: '60%', }}>
-        <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#3478F6', margin: 0, paddingTop: 2, }}>Search</Text>
-      </View>
+    <Pressable onPress={_handlePressButtonAsync} style={{ backgroundColor: '#eeeeef', flex: 1, justifyContent: 'center', flexDirection: "row", borderRadius: 10, padding: 10, }}>
+      <Ionicons name="ios-search-outline" size={24} color="#3478F6" />
     </Pressable>
   );
 }
 
 const SaveButton = ({ episode }) => {
-  const _storeData = async () => {
-    try {
-      let existingValue = await AsyncStorage.getItem('favouriteEpisodes');
-      existingValue = JSON.parse(existingValue);
-      console.log(typeof existingValue);
-      existingValue.push(episode);
-      const jsonValue = JSON.stringify(existingValue);
-      await AsyncStorage.setItem('favouriteEpisodes', jsonValue);
-    } catch (e) {
-      alert(e);
+  const [favourited, setFavourited] = React.useState(false);
+  useEffect(() => {
+    if(episode) {
+      inStorage(episode).then(data => {
+        setFavourited(data);
+      });
     }
+  }, [episode]);
+  const _storeData = () => {
+    handleStorage(episode).then(data => {
+      console.log('handleStorage', data);
+      setFavourited(data);
+    });
   }
   return(
-    <Pressable onPress={_storeData} style={{ backgroundColor: '#eeeeef', flex: 1, flexDirection: "row", borderRadius: 10, padding: 10, }}>
-      <View style={{ alignItems: 'flex-end', paddingRight: 5, verticalAlign: 'middle', width: '40%', }}>
-        <Ionicons name="ios-heart-sharp" size={24} color="#3478F6" />
-      </View>
-      <View style={{ alignItems: 'stretch', paddingLeft: 5, verticalAlign: 'middle', width: '60%', }}>
-        <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#3478F6', margin: 0, paddingTop: 2, }}>Save</Text>
-      </View>
+    <Pressable onPress={_storeData} style={{ backgroundColor: '#eeeeef', flex: 1, justifyContent: 'center', flexDirection: "row", borderRadius: 10, padding: 10, }}>
+      <Ionicons name={ favourited ? 'ios-heart-sharp' : 'ios-heart-outline'} size={24} color="#3478F6" />
     </Pressable>
   );
 }
@@ -67,13 +59,8 @@ const ShareButton = ({ message }) => {
     }
   };
   return(
-    <Pressable onPress={_onShare} style={{ backgroundColor: '#eeeeef', flex: 1, flexDirection: "row", borderRadius: 10, padding: 10, }}>
-      <View style={{ alignItems: 'flex-end', paddingRight: 5, verticalAlign: 'middle', width: '40%', }}>
-        <Ionicons name="ios-share-outline" size={24} color="#3478F6" />
-      </View>
-      <View style={{ alignItems: 'stretch', paddingLeft: 5, verticalAlign: 'middle', width: '60%', }}>
-        <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#3478F6', margin: 0, paddingTop: 2, }}>Share</Text>
-      </View>
+    <Pressable onPress={_onShare} style={{ backgroundColor: '#eeeeef', flex: 1, justifyContent: 'center', flexDirection: "row", borderRadius: 10, padding: 10, }}>
+      <Ionicons name="ios-share-outline" size={24} color="#3478F6" />
     </Pressable>
   );
 }

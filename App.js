@@ -6,9 +6,8 @@ import * as Haptics from 'expo-haptics';
 import { NavigationContainer, useScrollToTop } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { getRandomEpisode } from './helpers';
+import { getRandomEpisode, getStorage } from './helpers';
 import { ShowItem, SeasonItem, EpisodeItem, MovieItem, PlaylistSectionHeader, PlaylistItem, PlaylistEpisodeItem } from './components/Items';
 import { ShowCard, SeasonCard, EpisodeCard, RandomEpisodeCard, MovieCard, PlaylistCard } from './components/Cards';
 import { BackButton, CloseButton } from './components/Buttons';
@@ -42,8 +41,6 @@ function HomeScreen({ navigation }) {
   if(episodes.length === 0) {
     refreshRandomEpisodes();
   }
-
-
 
   return (
     <SafeAreaView style={styles.container}>
@@ -333,26 +330,14 @@ function FavouriteStackScreen() {
 
 function FavouritesScreen({ route, navigation }) {
   const [favouriteEpisodes, setFavouriteEpisodes] = useState([]);
-
-  const getData = async () => {
-    try {
-      let jsonValue = await AsyncStorage.getItem('favouriteEpisodes');
-      jsonValue = JSON.parse(jsonValue);
-      if (jsonValue !== null) {
-        setFavouriteEpisodes(jsonValue);
-      }
-    } catch(e) {
-      alert(e);
-    }
-  }
-
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      getData();
+      getStorage().then(data => {
+        setFavouriteEpisodes(data);
+      });
     });
     return unsubscribe;
   }, [navigation]);
-
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
@@ -425,7 +410,6 @@ function MyTabs() {
       <Tab.Screen name="FavouriteStack" component={FavouriteStackScreen} options={{ headerShown: false, tabBarLabel: "Favourites" }} />
       <Tab.Screen name="ShowsStack" component={ShowsStackScreen} options={{ headerShown: false, tabBarLabel: "Shows" }} />
       <Tab.Screen name="MoviesStack" component={MoviesStackScreen}  options={{ headerShown: false, tabBarLabel: "Movies" }} />
-
     </Tab.Navigator>
   );
 }

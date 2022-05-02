@@ -1,27 +1,86 @@
-const stripHtml = (text) => {
-  return text;
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const localStorageName = "favouriteEpisodes";
+
+const removeStorage = async () => {
+  try {
+    await AsyncStorage.removeItem(localStorageName);
+  } catch(e) {
+    alert(e);
+  }
 }
 
-/*
-  DEPRECATED
-  Format the JSON of a show so it can go nicely into a SectionList.
-*/
-const formatShowData = (show) => {
-  let dataShow = [];
-  show.seasons.forEach((season, index) => {
-    let dataSeason = {};
-    season.results.forEach((episode, index) => {
-      if(index === 0) {
-        dataSeason['season'] = episode
-        dataSeason.data = [];
-      } else { 
-        dataSeason.data.push(episode);
-      }
-    });
-    dataShow.push(dataSeason);
-  });
-  return dataShow;
+const clearStorage = async () => {
+  try {
+    let data = JSON.stringify([]);
+    await AsyncStorage.setItem(localStorageName, data);
+  } catch (e) {
+    alert(e);
+  }
 }
+
+const getStorage = async () => {
+  try {
+    let storageObject = await AsyncStorage.getItem(localStorageName);
+    return storageObject !== null ? JSON.parse(storageObject) : JSON.parse('[]');
+  } catch (e) {
+    alert(e);
+  }
+}
+
+const handleStorage = async (data) => {
+  try {
+    const episodeInSorage = await inStorage(data);
+    if(episodeInSorage) {
+      removeFromStorage(data);
+    } else {
+      addToStorage(data);
+    }
+    return !episodeInSorage;
+  } catch (e) {
+    alert(e);
+  }
+}
+
+const inStorage = async (data) => {
+  try {
+    let storageObject = await AsyncStorage.getItem(localStorageName);
+    storageObject = storageObject !== null ? JSON.parse(storageObject) : JSON.parse('[]');
+    const storageIndex = storageObject.findIndex(episode => episode.trackId === data.trackId);
+    if(storageIndex > -1) {
+      return true;
+    }
+    return false;
+  } catch (e) {
+    alert(e);
+  }
+}
+
+const addToStorage = async (data) => {
+  try {
+    let tempObject = await AsyncStorage.getItem(localStorageName);
+    tempObject = tempObject !== null ? JSON.parse(tempObject) : JSON.parse('[]');
+    tempObject.push(data);
+    const storageObject = JSON.stringify(tempObject);
+    await AsyncStorage.setItem(localStorageName, storageObject);
+  } catch (e) {
+    alert(e);
+  }
+}
+
+const removeFromStorage = async (data) => {
+  try {
+    const storageIndex = inStorage(data);
+    let tempObject = await AsyncStorage.getItem(localStorageName);
+    tempObject = tempObject !== null ? JSON.parse(tempObject) : JSON.parse('[]');
+    tempObject.splice(storageIndex, 1);
+    const storageObject = JSON.stringify(tempObject);
+    await AsyncStorage.setItem(localStorageName, storageObject);
+  } catch (e) {
+    alert(e);
+  }
+}
+
 /*
   Format the JSON of a show season so it can go nicely into a SectionList.
 */
@@ -129,4 +188,46 @@ const getRandomEpisode = (seasons) => {
   return episodes[randomEpisode];
 }
 
-export { stripHtml, formatSeasonData, getShowSeasonTitle, getShowSeasonNumber, getSearchTerm, getYear, getShowRun, getShowSeasonCount, getShowEpisodeCount, getPlaylistEpisodeCount, getSeasonEpisodeCount, getReleaseDate, getRuntime, removeHtmlTags, getRandomEpisode };
+export { 
+  removeStorage, 
+  clearStorage, 
+  getStorage, 
+  inStorage, 
+  handleStorage, 
+
+  formatSeasonData, 
+  getShowSeasonTitle, 
+  getShowSeasonNumber, 
+  getSearchTerm, 
+  getYear, 
+  getShowRun, 
+  getShowSeasonCount, 
+  getShowEpisodeCount, 
+  getPlaylistEpisodeCount, 
+  getSeasonEpisodeCount, 
+  getReleaseDate, 
+  getRuntime, 
+  removeHtmlTags, 
+  getRandomEpisode
+};
+
+/*
+  DEPRECATED
+  Format the JSON of a show so it can go nicely into a SectionList.
+*/
+const formatShowData = (show) => {
+  let dataShow = [];
+  show.seasons.forEach((season, index) => {
+    let dataSeason = {};
+    season.results.forEach((episode, index) => {
+      if(index === 0) {
+        dataSeason['season'] = episode
+        dataSeason.data = [];
+      } else { 
+        dataSeason.data.push(episode);
+      }
+    });
+    dataShow.push(dataSeason);
+  });
+  return dataShow;
+}
