@@ -52,7 +52,7 @@ const EpisodeCard = ({ episode }) => {
   const video = React.useRef(null);
   const [status, setStatus] = React.useState({});
   const webUrl = getSearchTerm(episode.artistName + ' ' + episode.trackName);
-  const message = `I'm wathcing ${episode.artistName} S${getShowSeasonNumber(episode.collectionName, episode.artistName)} E${ episode.trackNumber }: ${episode.trackName}`;
+  const message = `I'm watching ${episode.artistName} S${getShowSeasonNumber(episode.collectionName, episode.artistName)} E${ episode.trackNumber }: ${episode.trackName}`;
   return(
     <View style={{ backgroundColor: '#fdfdfd', padding: 20 }}>
       <View style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.4, shadowRadius: 12, }}>
@@ -119,7 +119,7 @@ const MovieCard = ({ movie }) => {
   const video = React.useRef(null);
   const [status, setStatus] = React.useState({});
   const webUrl = getSearchTerm(movie.trackName);
-  const message = `I'm wathcing ${movie.trackName}`;
+  const message = `I'm watching ${movie.trackName}`;
   return(
     <View style={{ backgroundColor: '#fdfdfd', padding: 20 }}>
       <View style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.4, shadowRadius: 12, }}>
