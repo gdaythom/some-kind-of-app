@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "star-trek-episodes",
+    "name": "Star Trek episodes",
     "slug": "star-trek-episodes",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -22,10 +22,15 @@
       "bundleIdentifier": "com.gdaythom.startrek.ios"
     },
     "android": {
+      "versionCode": 1,
+      "package": "com.gdaythom.startrek.adr",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       }
+    },
+    "androidStatusBar": {
+      "barStyle": "light-content"
     },
     "web": {
       "favicon": "./assets/favicon.png"
