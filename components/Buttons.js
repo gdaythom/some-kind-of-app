@@ -28,7 +28,6 @@ const SaveButton = ({ episode }) => {
   }, [episode]);
   const _storeData = () => {
     handleStorage(episode).then(data => {
-      console.log('handleStorage', data);
       setFavourited(data);
     });
   }
