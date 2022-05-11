@@ -28,7 +28,7 @@ Trace:
 
 npm manifest: 
   {
-    "name": "star-trek-episodes",
+    "name": "star-trek-app",
     "version": "1.0.0",
     "main": "node_modules/expo/AppEntry.js",
     "scripts": {
