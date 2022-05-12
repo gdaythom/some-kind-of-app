@@ -3,7 +3,7 @@ import { StyleSheet, Pressable, Text, ActivityIndicator, View, SafeAreaView, Scr
 import { StatusBar } from 'expo-status-bar';
 import * as Haptics from 'expo-haptics';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { NavigationContainer, useScrollToTop } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
@@ -11,8 +11,6 @@ import { getRandomEpisode, getStorage } from './helpers';
 import { ShowItem, SeasonItem, EpisodeItem, MovieItem, PlaylistSectionHeader, PlaylistItem, PlaylistEpisodeItem } from './components/Items';
 import { ShowCard, SeasonCard, EpisodeCard, RandomEpisodeCard, MovieCard, PlaylistCard } from './components/Cards';
 import { BackButton, CloseButton } from './components/Buttons';
-import { Playlists as playlists, TwoParters  as twoParters, ThreeParters as threeParters } from './media';
-
 
 const HomeStack = createNativeStackNavigator();
 
@@ -35,9 +33,7 @@ function HomeScreen({ navigation }) {
     loadRandomEpisodes();
   };
   const loadRandomEpisodes = () => {
-    console.log('loadRandomEpisodes');
     if(context?.data?.shows) {
-      console.log('context has data');
       setEpisodes([]);
       var episodeBucket = [];
       context.data.shows.map(show => episodeBucket.push(getRandomEpisode(show.seasons)));
@@ -46,7 +42,6 @@ function HomeScreen({ navigation }) {
   };
 
   useEffect(() => {
-    console.log('useEffect');
     loadRandomEpisodes();
   }, [context]);
 
@@ -242,19 +237,20 @@ function MovieScreen({ route, navigation }) {
  }
 
  function PlaylistsScreen({ route, navigation }) {
+  const context = useContext(ContextMedia);
   const twoPartersItem = { title: 'Two Parters' };
   const threePartersItem = { title: 'Three Parters' };
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
         <Text style={{ fontSize: 34, fontWeight: "bold", marginBottom: 10, paddingTop: 20, paddingLeft: 20, }}>Playlists</Text>
-        <Pressable onPress={() => navigation.navigate('MultiplePlaylist', { title: twoPartersItem.title, playlist: twoParters })}>
+        <Pressable onPress={() => navigation.navigate('MultiplePlaylist', { title: twoPartersItem.title, playlist: context.data.twoParters })}>
           <PlaylistItem playlist={twoPartersItem} />
         </Pressable>
-        <Pressable onPress={() => navigation.navigate('MultiplePlaylist', { title: threePartersItem.title, playlist: threeParters })}>
+        <Pressable onPress={() => navigation.navigate('MultiplePlaylist', { title: threePartersItem.title, playlist: context.data.threeParters })}>
           <PlaylistItem playlist={threePartersItem} />
         </Pressable>
-        {playlists.map((item, index) => (
+        {context.data.playlists.map((item, index) => (
           <Pressable key={index} onPress={() => navigation.navigate('SinglePlaylist', { title: item.title, playlist: item })}>
             <PlaylistItem playlist={item} />
           </Pressable>
@@ -463,36 +459,5 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     paddingHorizontal: 0,
-  },
-  modalView: {
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5
-  },
-  button: {
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2
-  },
-  buttonOpen: {
-    backgroundColor: "#F194FF",
-  },
-  buttonClose: {
-    backgroundColor: "#2196F3",
-  },
-  textStyle: {
-    color: "white",
-    fontWeight: "bold",
-    textAlign: "center"
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: "center"
   }
 });
