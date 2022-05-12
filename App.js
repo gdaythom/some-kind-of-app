@@ -47,7 +47,7 @@ function HomeScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      {context.isLoading ? <ActivityIndicator/> : (
+      {context.isLoading ? <View style={{ flex: 1, justifyContent: "center", }}><ActivityIndicator/></View> : (
         <ScrollView style={styles.scrollView} stickyHeaderIndices={[0]}>
           <View>
             <View style={{ backgroundColor: '#ffffff', flex: 1, flexDirection: "row", alignItems: "center", }}>
@@ -106,14 +106,16 @@ function ShowsScreen({ navigation }) {
   const context = useContext(ContextMedia);
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollView}>
-        <Text style={{ fontSize: 34, fontWeight: "bold", marginBottom: 10, paddingTop: 20, paddingLeft: 20, }}>Shows</Text>
-        {context.data.shows.map((item, index) => (
-          <Pressable key={index} onPress={() => navigation.navigate('Show', { title: item.title, show: item })}>
-            <ShowItem show={item} />
-          </Pressable>
-        ))}
-      </ScrollView>
+      {context.isLoading ? <View style={{ flex: 1, justifyContent: "center", }}><ActivityIndicator/></View> : (
+        <ScrollView style={styles.scrollView}>
+          <Text style={{ fontSize: 34, fontWeight: "bold", marginBottom: 10, paddingTop: 20, paddingLeft: 20, }}>Shows</Text>
+          {context.data.shows.map((item, index) => (
+            <Pressable key={index} onPress={() => navigation.navigate('Show', { title: item.title, show: item })}>
+              <ShowItem show={item} />
+            </Pressable>
+          ))}
+        </ScrollView>
+      )}
     </SafeAreaView>
    );
  }
@@ -194,14 +196,16 @@ function MoviesStackScreen() {
   const context = useContext(ContextMedia);
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollView}>
-        <Text style={{ fontSize: 34, fontWeight: "bold", marginBottom: 10, paddingTop: 20, paddingLeft: 20, }}>Movies</Text>
-        {context.data.movies.results.map((item, index) => (
-          <Pressable key={index} onPress={() => navigation.navigate('Movie', { title: item.trackName, movie: item })}>
-            <MovieItem movie={item} />
-          </Pressable>
-        ))}
-      </ScrollView>
+      {context.isLoading ? <View style={{ flex: 1, justifyContent: "center", }}><ActivityIndicator/></View> : (
+        <ScrollView style={styles.scrollView}>
+          <Text style={{ fontSize: 34, fontWeight: "bold", marginBottom: 10, paddingTop: 20, paddingLeft: 20, }}>Movies</Text>
+          {context.data.movies.results.map((item, index) => (
+            <Pressable key={index} onPress={() => navigation.navigate('Movie', { title: item.trackName, movie: item })}>
+              <MovieItem movie={item} />
+            </Pressable>
+          ))}
+        </ScrollView>
+      )}
     </SafeAreaView>
   );
 }
@@ -242,6 +246,7 @@ function MovieScreen({ route, navigation }) {
   const threePartersItem = { title: 'Three Parters' };
   return (
     <SafeAreaView style={styles.container}>
+      {context.isLoading ? <View style={{ flex: 1, justifyContent: "center", }}><ActivityIndicator/></View> : (
       <ScrollView style={styles.scrollView}>
         <Text style={{ fontSize: 34, fontWeight: "bold", marginBottom: 10, paddingTop: 20, paddingLeft: 20, }}>Playlists</Text>
         <Pressable onPress={() => navigation.navigate('MultiplePlaylist', { title: twoPartersItem.title, playlist: context.data.twoParters })}>
@@ -256,7 +261,7 @@ function MovieScreen({ route, navigation }) {
           </Pressable>
         ))}
       </ScrollView>
-
+      )}
     </SafeAreaView>
   );
 }
@@ -337,6 +342,7 @@ function FavouriteStackScreen() {
 }
 
 function FavouritesScreen({ route, navigation }) {
+  const context = useContext(ContextMedia);
   const [favouriteEpisodes, setFavouriteEpisodes] = useState([]);
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -348,16 +354,18 @@ function FavouritesScreen({ route, navigation }) {
   }, [navigation]);
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollView}>
-        <Text style={{ fontSize: 34, fontWeight: "bold", marginBottom: 10, paddingTop: 20, paddingLeft: 20, }}>Favourites</Text>
-        {favouriteEpisodes && favouriteEpisodes.length !== 0 &&
-          favouriteEpisodes.map((item, index) => (
-            <Pressable key={index} onPress={() => navigation.navigate('FavouriteEpisode', { title: item.trackName, episode: item })}>
-              <PlaylistEpisodeItem episode={item} />
-            </Pressable>
-          ))
-        }
-      </ScrollView>
+      {context.isLoading ? <View style={{ flex: 1, justifyContent: "center", }}><ActivityIndicator/></View> : (
+        <ScrollView style={styles.scrollView}>
+          <Text style={{ fontSize: 34, fontWeight: "bold", marginBottom: 10, paddingTop: 20, paddingLeft: 20, }}>Favourites</Text>
+          {favouriteEpisodes && favouriteEpisodes.length !== 0 &&
+            favouriteEpisodes.map((item, index) => (
+              <Pressable key={index} onPress={() => navigation.navigate('FavouriteEpisode', { title: item.trackName, episode: item })}>
+                <PlaylistEpisodeItem episode={item} />
+              </Pressable>
+            ))
+          }
+        </ScrollView>
+      )}
     </SafeAreaView>
   );
 }
@@ -454,6 +462,7 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     paddingTop: StatusBar.currentHeight,
     backgroundColor: '#fdfdfd',
   },
