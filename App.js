@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { StyleSheet, Pressable, Text, ActivityIndicator, View, SafeAreaView, ScrollView, SectionList } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { useWindowDimensions, StyleSheet, Pressable, Text, Modal, Alert, Image, View, SafeAreaView, ScrollView, SectionList } from 'react-native';
-import Ionicons from '@expo/vector-icons/Ionicons';
 import * as Haptics from 'expo-haptics';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { NavigationContainer, useScrollToTop } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -11,7 +11,7 @@ import { getRandomEpisode, getStorage } from './helpers';
 import { ShowItem, SeasonItem, EpisodeItem, MovieItem, PlaylistSectionHeader, PlaylistItem, PlaylistEpisodeItem } from './components/Items';
 import { ShowCard, SeasonCard, EpisodeCard, RandomEpisodeCard, MovieCard, PlaylistCard } from './components/Cards';
 import { BackButton, CloseButton } from './components/Buttons';
-import { Shows as shows, Movies as movies, Playlists as playlists, TwoParters  as twoParters, ThreeParters as threeParters, TngSeries as tngSeries } from './media';
+import { Playlists as playlists, TwoParters  as twoParters, ThreeParters as threeParters } from './media';
 
 
 const HomeStack = createNativeStackNavigator();
@@ -29,40 +29,50 @@ function HomeStackScreen() {
 
 function HomeScreen({ navigation }) {
   const [episodes, setEpisodes] = React.useState([]);
-
+  const context = useContext(ContextMedia);
   const refreshRandomEpisodes = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-    setEpisodes([]);
-    var episodeBucket = [];
-    shows.map(show => episodeBucket.push(getRandomEpisode(show.seasons)));
-    setEpisodes(episodeBucket);
+    loadRandomEpisodes();
+  };
+  const loadRandomEpisodes = () => {
+    console.log('loadRandomEpisodes');
+    if(context?.data?.shows) {
+      console.log('context has data');
+      setEpisodes([]);
+      var episodeBucket = [];
+      context.data.shows.map(show => episodeBucket.push(getRandomEpisode(show.seasons)));
+      setEpisodes(episodeBucket);
+    }
   };
 
-  if(episodes.length === 0) {
-    refreshRandomEpisodes();
-  }
+  useEffect(() => {
+    console.log('useEffect');
+    loadRandomEpisodes();
+  }, [context]);
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollView} stickyHeaderIndices={[0]}>
-        <View>
-          <View style={{ backgroundColor: '#ffffff', flex: 1, flexDirection: "row", alignItems: "center", }}>
-            <View style={{ flex: 1, }}>
-              <Text style={{ fontSize: 34, fontWeight: "bold", paddingVertical: 20, paddingLeft: 20, }}>Home</Text>
-            </View>
-            <View style={{ marginLeft: 'auto', paddingRight: 20, }}>
-              <Pressable onPress={() => refreshRandomEpisodes()} style={{ backgroundColor: '#eeeeef', borderRadius: 10, padding: 10, }}>
-                <Ionicons name="ios-refresh-sharp" size={24} color="#3478F6" />
-              </Pressable>
+      {context.isLoading ? <ActivityIndicator/> : (
+        <ScrollView style={styles.scrollView} stickyHeaderIndices={[0]}>
+          <View>
+            <View style={{ backgroundColor: '#ffffff', flex: 1, flexDirection: "row", alignItems: "center", }}>
+              <View style={{ flex: 1, }}>
+                <Text style={{ fontSize: 34, fontWeight: "bold", paddingVertical: 20, paddingLeft: 20, }}>Home</Text>
+              </View>
+              <View style={{ marginLeft: 'auto', paddingRight: 20, }}>
+                <Pressable onPress={() => refreshRandomEpisodes()} style={{ backgroundColor: '#eeeeef', borderRadius: 10, padding: 10, }}>
+                  <Ionicons name="ios-refresh-sharp" size={24} color="#3478F6" />
+                </Pressable>
+              </View>
             </View>
           </View>
-        </View>
-        <View style={{ paddingBottom: 20, }}>
-          {episodes.map((item, index) =>
-            <Pressable key={index} onPress={() => navigation.navigate('HomeEpisode', { title: item.trackName, episode: item })}><RandomEpisodeCard episode={item} /></Pressable>
-          )}
-        </View>
-      </ScrollView>
+          <View style={{ paddingBottom: 20, }}>
+            {episodes.map((item, index) =>
+              <Pressable key={index} onPress={() => navigation.navigate('HomeEpisode', { title: item.trackName, episode: item })}><RandomEpisodeCard episode={item} /></Pressable>
+            )}
+          </View>
+        </ScrollView>
+      )}
     </SafeAreaView>
   );
 }
@@ -98,11 +108,12 @@ function ShowsStackScreen() {
 }
 
 function ShowsScreen({ navigation }) {
+  const context = useContext(ContextMedia);
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
         <Text style={{ fontSize: 34, fontWeight: "bold", marginBottom: 10, paddingTop: 20, paddingLeft: 20, }}>Shows</Text>
-        {shows.map((item, index) => (
+        {context.data.shows.map((item, index) => (
           <Pressable key={index} onPress={() => navigation.navigate('Show', { title: item.title, show: item })}>
             <ShowItem show={item} />
           </Pressable>
@@ -185,11 +196,12 @@ function MoviesStackScreen() {
 }
 
  function MoviesScreen({ route, navigation }) {
+  const context = useContext(ContextMedia);
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
         <Text style={{ fontSize: 34, fontWeight: "bold", marginBottom: 10, paddingTop: 20, paddingLeft: 20, }}>Movies</Text>
-        {movies.results.map((item, index) => (
+        {context.data.movies.results.map((item, index) => (
           <Pressable key={index} onPress={() => navigation.navigate('Movie', { title: item.trackName, movie: item })}>
             <MovieItem movie={item} />
           </Pressable>
@@ -414,11 +426,33 @@ function MyTabs() {
   );
 }
 
+const ContextMedia = React.createContext(null);
+
 export default function App() {
+  const [isLoading, setLoading] = useState(true);
+  const [data, setData] = useState([]);
+
+  const getMedia = async () => {
+    try {
+     const response = await fetch('https://star-trek-episodes.gdaythom.workers.dev');
+     const json = await response.json();
+     setData(json);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+  useEffect(() => {
+    getMedia();
+  }, []);
+
   return (
-    <NavigationContainer>
-      <MyTabs />
-    </NavigationContainer>
+    <ContextMedia.Provider value={{ isLoading, data }}>
+      <NavigationContainer>
+        <MyTabs />
+      </NavigationContainer>
+    </ContextMedia.Provider>
   );
 }
 
