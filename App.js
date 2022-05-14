@@ -47,6 +47,7 @@ function HomeScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar style='auto' />
       {context.isLoading ? <View style={{ flex: 1, justifyContent: "center", }}><ActivityIndicator/></View> : (
         <ScrollView style={styles.scrollView} stickyHeaderIndices={[0]}>
           <View>
@@ -106,6 +107,7 @@ function ShowsScreen({ navigation }) {
   const context = useContext(ContextMedia);
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar style='auto' />
       {context.isLoading ? <View style={{ flex: 1, justifyContent: "center", }}><ActivityIndicator/></View> : (
         <ScrollView style={styles.scrollView}>
           <Text style={{ fontSize: 34, fontWeight: "bold", marginBottom: 10, paddingTop: 20, paddingLeft: 20, }}>Shows</Text>
@@ -124,6 +126,7 @@ function ShowsScreen({ navigation }) {
   const { show } = route.params;
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar style='auto' />
       <ScrollView style={styles.scrollView}>
         <View style={{ paddingTop: 20, paddingHorizontal: 5, }}>
           <BackButton navigation={navigation} />
@@ -148,6 +151,7 @@ function ShowsScreen({ navigation }) {
   const episodes = season.results.filter((_item, index) => index > 0);
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar style='auto' />
       <ScrollView style={styles.scrollView}>
         <View style={{ paddingTop: 20, paddingHorizontal: 5, }}>
           <BackButton navigation={navigation} />
@@ -196,6 +200,7 @@ function MoviesStackScreen() {
   const context = useContext(ContextMedia);
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar style='auto' />
       {context.isLoading ? <View style={{ flex: 1, justifyContent: "center", }}><ActivityIndicator/></View> : (
         <ScrollView style={styles.scrollView}>
           <Text style={{ fontSize: 34, fontWeight: "bold", marginBottom: 10, paddingTop: 20, paddingLeft: 20, }}>Movies</Text>
@@ -246,6 +251,7 @@ function MovieScreen({ route, navigation }) {
   const threePartersItem = { title: 'Three Parters' };
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar style='auto' />
       {context.isLoading ? <View style={{ flex: 1, justifyContent: "center", }}><ActivityIndicator/></View> : (
       <ScrollView style={styles.scrollView}>
         <Text style={{ fontSize: 34, fontWeight: "bold", marginBottom: 10, paddingTop: 20, paddingLeft: 20, }}>Playlists</Text>
@@ -271,6 +277,7 @@ function SinglePlaylistScreen({ route, navigation }) {
   const episodes = playlist.data;
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar style='auto' />
       <ScrollView style={styles.scrollView}>
         <View style={{ paddingTop: 20, paddingHorizontal: 5, }}>
           <BackButton navigation={navigation} />
@@ -293,6 +300,7 @@ function MultiplePlaylistScreen({ route, navigation }) {
   const { title, playlist } = route.params;
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar style='auto' />
       <SectionList
         ListHeaderComponent={
           <View style={{ paddingTop: 20, paddingHorizontal: 5, }}>
@@ -354,6 +362,7 @@ function FavouritesScreen({ route, navigation }) {
   }, [navigation]);
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar style='auto' />
       {context.isLoading ? <View style={{ flex: 1, justifyContent: "center", }}><ActivityIndicator/></View> : (
         <ScrollView style={styles.scrollView}>
           <Text style={{ fontSize: 34, fontWeight: "bold", marginBottom: 10, paddingTop: 20, paddingLeft: 20, }}>Favourites</Text>
@@ -463,7 +472,14 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: StatusBar.currentHeight,
+    ...Platform.select({
+      ios: {
+        paddingTop: StatusBar.currentHeight,
+      },
+      android: {
+        paddingTop: 24,
+      },
+    }),
     backgroundColor: '#fdfdfd',
   },
   scrollView: {
