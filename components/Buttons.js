@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Pressable, Text, Share } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import * as WebBrowser from 'expo-web-browser';
+import * as Haptics from 'expo-haptics';
 import { inStorage, handleStorage } from '../helpers';
 
 const SearchButton = ({ webUrl }) => {
@@ -27,6 +28,7 @@ const SaveButton = ({ episode }) => {
     }
   }, [episode]);
   const _storeData = () => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     handleStorage(episode).then(data => {
       setFavourited(data);
     });
