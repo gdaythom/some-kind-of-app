@@ -76,7 +76,7 @@ function HomeEpisodeScreen({ route, navigation }) {
   const { episode } = route.params;
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar style='light' />
+      <StatusBar style={Platform.OS === 'ios' ? 'light' : 'dark'} />
       <ScrollView style={styles.scrollView}>
         <View style={{ paddingTop: 20, paddingHorizontal: 5, alignItems: 'flex-end' }}>
           <CloseButton navigation={navigation} />
@@ -170,7 +170,7 @@ function EpisodeScreen({ route, navigation }) {
   const { episode } = route.params;
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar style='light' />
+      <StatusBar style={Platform.OS === 'ios' ? 'light' : 'dark'} />
       <ScrollView style={styles.scrollView}>
         <View style={{ paddingTop: 20, paddingHorizontal: 5, alignItems: 'flex-end' }}>
           <CloseButton navigation={navigation} />
@@ -214,7 +214,7 @@ function MovieScreen({ route, navigation }) {
   const { movie } = route.params;
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar style='light' />
+      <StatusBar style={Platform.OS === 'ios' ? 'light' : 'dark'} />
       <ScrollView style={styles.scrollView}>
         <View style={{ paddingTop: 20, paddingHorizontal: 5, alignItems: 'flex-end' }}>
           <CloseButton navigation={navigation} />
@@ -317,7 +317,7 @@ function PlaylistEpisodeScreen({ route, navigation }) {
   const { episode } = route.params;
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar style='light' />
+      <StatusBar style={Platform.OS === 'ios' ? 'light' : 'dark'} />
       <ScrollView style={styles.scrollView}>
         <View style={{ paddingTop: 20, paddingHorizontal: 5, alignItems: 'flex-end' }}>
           <CloseButton navigation={navigation} />
@@ -374,7 +374,7 @@ function FavouritesEpisodeScreen({ route, navigation }) {
   const { episode } = route.params;
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar style='light' />
+      <StatusBar style={Platform.OS === 'ios' ? 'light' : 'dark'} />
       <ScrollView style={styles.scrollView}>
         <View style={{ paddingTop: 20, paddingHorizontal: 5, alignItems: 'flex-end' }}>
           <CloseButton navigation={navigation} />
