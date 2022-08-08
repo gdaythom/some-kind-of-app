@@ -48,27 +48,35 @@ function HomeScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style='auto' />
-      {context.isLoading ? <View style={{ flex: 1, justifyContent: "center", }}><ActivityIndicator/></View> : (
+      {context.isLoading === true &&
+        <View style={{ flex: 1, justifyContent: "center", }}><ActivityIndicator/></View>
+      }
+      {context.isError === true &&
+        <View style={{ flex: 1, justifyContent: "center", }}>
+          <Text style={{ fontSize: 22, textAlign: "center", fontWeight: "bold", }}>Cannot connect to the API</Text>
+        </View>
+      }
+      {context.isLoading === false && context.isError === false &&
         <ScrollView style={styles.scrollView} stickyHeaderIndices={[0]}>
-          <View>
-            <View style={{ backgroundColor: '#ffffff', flex: 1, flexDirection: "row", alignItems: "center", }}>
-              <View style={{ flex: 1, }}>
-                <Text style={{ fontSize: 34, fontWeight: "bold", paddingVertical: 20, paddingLeft: 20, }}>Home</Text>
-              </View>
-              <View style={{ marginLeft: 'auto', paddingRight: 20, }}>
-                <Pressable onPress={() => refreshRandomEpisodes()} style={{ backgroundColor: '#eeeeef', borderRadius: 10, padding: 10, }}>
-                  <Ionicons name="ios-refresh-sharp" size={24} color="#3478F6" />
-                </Pressable>
-              </View>
+        <View>
+          <View style={{ backgroundColor: '#ffffff', flex: 1, flexDirection: "row", alignItems: "center", }}>
+            <View style={{ flex: 1, }}>
+              <Text style={{ fontSize: 34, fontWeight: "bold", paddingVertical: 20, paddingLeft: 20, }}>Home</Text>
+            </View>
+            <View style={{ marginLeft: 'auto', paddingRight: 20, }}>
+              <Pressable onPress={() => refreshRandomEpisodes()} style={{ backgroundColor: '#eeeeef', borderRadius: 10, padding: 10, }}>
+                <Ionicons name="ios-refresh-sharp" size={24} color="#3478F6" />
+              </Pressable>
             </View>
           </View>
-          <View style={{ paddingBottom: 20, }}>
-            {episodes.map((item, index) =>
-              <Pressable key={index} onPress={() => navigation.navigate('HomeEpisode', { title: item.trackName, episode: item })}><RandomEpisodeCard episode={item} /></Pressable>
-            )}
-          </View>
-        </ScrollView>
-      )}
+        </View>
+        <View style={{ paddingBottom: 20, }}>
+          {episodes.map((item, index) =>
+            <Pressable key={index} onPress={() => navigation.navigate('HomeEpisode', { title: item.trackName, episode: item })}><RandomEpisodeCard episode={item} /></Pressable>
+          )}
+        </View>
+      </ScrollView>
+      }
     </SafeAreaView>
   );
 }
@@ -108,7 +116,15 @@ function ShowsScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style='auto' />
-      {context.isLoading ? <View style={{ flex: 1, justifyContent: "center", }}><ActivityIndicator/></View> : (
+      {context.isLoading === true &&
+        <View style={{ flex: 1, justifyContent: "center", }}><ActivityIndicator/></View>
+      }
+      {context.isError === true &&
+        <View style={{ flex: 1, justifyContent: "center", }}>
+          <Text style={{ fontSize: 22, textAlign: "center", fontWeight: "bold", }}>Cannot connect to the API</Text>
+        </View>
+      }
+      {context.isLoading === false && context.isError === false &&
         <ScrollView style={styles.scrollView}>
           <Text style={{ fontSize: 34, fontWeight: "bold", marginBottom: 10, paddingTop: 20, paddingLeft: 20, }}>Shows</Text>
           {context.data.shows.map((item, index) => (
@@ -117,7 +133,7 @@ function ShowsScreen({ navigation }) {
             </Pressable>
           ))}
         </ScrollView>
-      )}
+      }
     </SafeAreaView>
    );
  }
@@ -201,7 +217,15 @@ function MoviesStackScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style='auto' />
-      {context.isLoading ? <View style={{ flex: 1, justifyContent: "center", }}><ActivityIndicator/></View> : (
+      {context.isLoading === true &&
+        <View style={{ flex: 1, justifyContent: "center", }}><ActivityIndicator/></View>
+      }
+      {context.isError === true &&
+        <View style={{ flex: 1, justifyContent: "center", }}>
+          <Text style={{ fontSize: 22, textAlign: "center", fontWeight: "bold", }}>Cannot connect to the API</Text>
+        </View>
+      }
+      {context.isLoading === false && context.isError === false &&
         <ScrollView style={styles.scrollView}>
           <Text style={{ fontSize: 34, fontWeight: "bold", marginBottom: 10, paddingTop: 20, paddingLeft: 20, }}>Movies</Text>
           {context.data.movies.results.map((item, index) => (
@@ -210,7 +234,7 @@ function MoviesStackScreen() {
             </Pressable>
           ))}
         </ScrollView>
-      )}
+      }
     </SafeAreaView>
   );
 }
@@ -252,7 +276,15 @@ function MovieScreen({ route, navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style='auto' />
-      {context.isLoading ? <View style={{ flex: 1, justifyContent: "center", }}><ActivityIndicator/></View> : (
+      {context.isLoading === true &&
+        <View style={{ flex: 1, justifyContent: "center", }}><ActivityIndicator/></View>
+      }
+      {context.isError === true &&
+        <View style={{ flex: 1, justifyContent: "center", }}>
+          <Text style={{ fontSize: 22, textAlign: "center", fontWeight: "bold", }}>Cannot connect to the API</Text>
+        </View>
+      }
+      {context.isLoading === false && context.isError === false &&
       <ScrollView style={styles.scrollView}>
         <Text style={{ fontSize: 34, fontWeight: "bold", marginBottom: 10, paddingTop: 20, paddingLeft: 20, }}>Playlists</Text>
         <Pressable onPress={() => navigation.navigate('MultiplePlaylist', { title: twoPartersItem.title, playlist: context.data.twoParters })}>
@@ -267,7 +299,7 @@ function MovieScreen({ route, navigation }) {
           </Pressable>
         ))}
       </ScrollView>
-      )}
+      }
     </SafeAreaView>
   );
 }
@@ -363,7 +395,15 @@ function FavouritesScreen({ route, navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style='auto' />
-      {context.isLoading ? <View style={{ flex: 1, justifyContent: "center", }}><ActivityIndicator/></View> : (
+      {context.isLoading === true &&
+        <View style={{ flex: 1, justifyContent: "center", }}><ActivityIndicator/></View>
+      }
+      {context.isError === true &&
+        <View style={{ flex: 1, justifyContent: "center", }}>
+          <Text style={{ fontSize: 22, textAlign: "center", fontWeight: "bold", }}>Cannot connect to the API</Text>
+        </View>
+      }
+      {context.isLoading === false && context.isError === false &&
         <ScrollView style={styles.scrollView}>
           <Text style={{ fontSize: 34, fontWeight: "bold", marginBottom: 10, paddingTop: 20, paddingLeft: 20, }}>Favourites</Text>
           {favouriteEpisodes && favouriteEpisodes.length !== 0 &&
@@ -374,7 +414,7 @@ function FavouritesScreen({ route, navigation }) {
             ))
           }
         </ScrollView>
-      )}
+      }
     </SafeAreaView>
   );
 }
@@ -443,6 +483,7 @@ const ContextMedia = React.createContext(null);
 
 export default function App() {
   const [isLoading, setLoading] = useState(true);
+  const [isError, setError] = useState(false);
   const [data, setData] = useState([]);
 
   const getMedia = async () => {
@@ -452,6 +493,7 @@ export default function App() {
      setData(json);
     } catch (error) {
       console.error(error);
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -461,7 +503,7 @@ export default function App() {
   }, []);
 
   return (
-    <ContextMedia.Provider value={{ isLoading, data }}>
+    <ContextMedia.Provider value={{ isLoading, isError, data }}>
       <NavigationContainer>
         <MyTabs />
       </NavigationContainer>
