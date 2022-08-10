@@ -488,7 +488,7 @@ export default function App() {
 
   const getMedia = async () => {
     try {
-     const response = await fetch('https://star-trek-episodes.gdaythom.workers.dev');
+     const response = await fetch('https://some-kind-of-api.gdaythom.workers.dev');
      const json = await response.json();
      setData(json);
     } catch (error) {
